@@ -1,6 +1,6 @@
 /**
   \file    DeviceDS18B20.c 
-  \brief   Исполняемый файл драйвера датчика температуры DS18B20
+  \brief   РСЃРїРѕР»РЅСЏРµРјС‹Р№ С„Р°Р№Р» РґСЂР°Р№РІРµСЂР° РґР°С‚С‡РёРєР° С‚РµРјРїРµСЂР°С‚СѓСЂС‹ DS18B20
   \author  JavaLandau
   \version 1.0
   \date    20.12.2017 
@@ -11,63 +11,63 @@
 #include "TIMDelay.h"
 
 /**
-  \defgroup module_service_DS18B20 Служебные функции для работы с DS18B20
-  \brief Модуль служебных функций, необходимых для работы с микросхемой датчика температуры DS18B20
+  \defgroup module_service_DS18B20 РЎР»СѓР¶РµР±РЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ DS18B20
+  \brief РњРѕРґСѓР»СЊ СЃР»СѓР¶РµР±РЅС‹С… С„СѓРЅРєС†РёР№, РЅРµРѕР±С…РѕРґРёРјС‹С… РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РјРёРєСЂРѕСЃС…РµРјРѕР№ РґР°С‚С‡РёРєР° С‚РµРјРїРµСЂР°С‚СѓСЂС‹ DS18B20
 @{
 */
 
-#define COUNT_BITS_OF_BYTE              8               ///<Количество бит в байте
+#define COUNT_BITS_OF_BYTE              8               ///<РљРѕР»РёС‡РµСЃС‚РІРѕ Р±РёС‚ РІ Р±Р°Р№С‚Рµ
 
-#define TIME_RESET_PULSE                460             ///<Время импульса Reset в микросекундах
-#define TIME_PRESENCE_WAIT              15              ///<Время отклика от датчика в микросекундах
+#define TIME_RESET_PULSE                460             ///<Р’СЂРµРјСЏ РёРјРїСѓР»СЊСЃР° Reset РІ РјРёРєСЂРѕСЃРµРєСѓРЅРґР°С…
+#define TIME_PRESENCE_WAIT              15              ///<Р’СЂРµРјСЏ РѕС‚РєР»РёРєР° РѕС‚ РґР°С‚С‡РёРєР° РІ РјРёРєСЂРѕСЃРµРєСѓРЅРґР°С…
 
-#define TIME_BETWEEN_SLOT               1               ///<Время между слотами в микросекундах
+#define TIME_BETWEEN_SLOT               1               ///<Р’СЂРµРјСЏ РјРµР¶РґСѓ СЃР»РѕС‚Р°РјРё РІ РјРёРєСЂРѕСЃРµРєСѓРЅРґР°С…
 
-#define TIME_INIT_WRITE_SLOT            1               ///<Время инициализации слота записи в микросекундах
-#define TIME_WRITE_0_SLOT               50              ///<Время записи "0" в микросекундах
-#define TIME_WRITE_1_SLOT               35              ///<Время записи "1" в микросекундах
+#define TIME_INIT_WRITE_SLOT            1               ///<Р’СЂРµРјСЏ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё СЃР»РѕС‚Р° Р·Р°РїРёСЃРё РІ РјРёРєСЂРѕСЃРµРєСѓРЅРґР°С…
+#define TIME_WRITE_0_SLOT               50              ///<Р’СЂРµРјСЏ Р·Р°РїРёСЃРё "0" РІ РјРёРєСЂРѕСЃРµРєСѓРЅРґР°С…
+#define TIME_WRITE_1_SLOT               35              ///<Р’СЂРµРјСЏ Р·Р°РїРёСЃРё "1" РІ РјРёРєСЂРѕСЃРµРєСѓРЅРґР°С…
 
-#define TIME_INIT_READ_SLOT             1               ///<Время инициализации слота чтения в микросекундах
-#define TIME_READ_SLOT                  4               ///<Окно чтения
-#define TIME_READ_SLOT_PART             35              ///<Время слота чтения
+#define TIME_INIT_READ_SLOT             1               ///<Р’СЂРµРјСЏ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё СЃР»РѕС‚Р° С‡С‚РµРЅРёСЏ РІ РјРёРєСЂРѕСЃРµРєСѓРЅРґР°С…
+#define TIME_READ_SLOT                  4               ///<РћРєРЅРѕ С‡С‚РµРЅРёСЏ
+#define TIME_READ_SLOT_PART             35              ///<Р’СЂРµРјСЏ СЃР»РѕС‚Р° С‡С‚РµРЅРёСЏ
 
-#define TIME_WAIT                       10              ///<Время ожидания
+#define TIME_WAIT                       10              ///<Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ
 
-#define TIME_TEMP_CONV                  800000          ///<Время конвертации данных температуры
+#define TIME_TEMP_CONV                  800000          ///<Р’СЂРµРјСЏ РєРѕРЅРІРµСЂС‚Р°С†РёРё РґР°РЅРЅС‹С… С‚РµРјРїРµСЂР°С‚СѓСЂС‹
 
-#define DS18B20_SCRATCHPAD_MEM_SIZE    9               ///<Размер памяти датчика температуры в байтах
-#define DS18B20_COUNT_TRYING           10              ///<Количество попыток при запросе/отправке данных
+#define DS18B20_SCRATCHPAD_MEM_SIZE    9               ///<Р Р°Р·РјРµСЂ РїР°РјСЏС‚Рё РґР°С‚С‡РёРєР° С‚РµРјРїРµСЂР°С‚СѓСЂС‹ РІ Р±Р°Р№С‚Р°С…
+#define DS18B20_COUNT_TRYING           10              ///<РљРѕР»РёС‡РµСЃС‚РІРѕ РїРѕРїС‹С‚РѕРє РїСЂРё Р·Р°РїСЂРѕСЃРµ/РѕС‚РїСЂР°РІРєРµ РґР°РЅРЅС‹С…
 
-static DeviceDS18B20 DS18B20Dev;                      ///<Объект драйвера датчика температуры
-static uint8_t StatusReadConvertT = FALSE;              ///<Флаг состояния конвертации данных
+static DeviceDS18B20 DS18B20Dev;                      ///<РћР±СЉРµРєС‚ РґСЂР°Р№РІРµСЂР° РґР°С‚С‡РёРєР° С‚РµРјРїРµСЂР°С‚СѓСЂС‹
+static uint8_t StatusReadConvertT = FALSE;              ///<Р¤Р»Р°Рі СЃРѕСЃС‚РѕСЏРЅРёСЏ РєРѕРЅРІРµСЂС‚Р°С†РёРё РґР°РЅРЅС‹С…
 
-/**Инициализация процесса обмена данными
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїСЂРѕС†РµСЃСЃР° РѕР±РјРµРЅР° РґР°РЅРЅС‹РјРё
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */ 
 static uint32_t prvDeviceDS18B20InitSequence(ExtCodeDeviceDS18B20* pExCode);
 
-/**Чтение данных памяти датчика
-  \param[out] pRecBytes считываемые данные
-  \return Результат выполнения функции 
+/**Р§С‚РµРЅРёРµ РґР°РЅРЅС‹С… РїР°РјСЏС‚Рё РґР°С‚С‡РёРєР°
+  \param[out] pRecBytes СЃС‡РёС‚С‹РІР°РµРјС‹Рµ РґР°РЅРЅС‹Рµ
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */ 
 static uint32_t prvDeviceDS18B20ReadScratchPad(uint8_t* pRecBytes);
 
-/**Отправка данных в датчик 
-  \param[in] pSendBytes отправляемые данные
-  \param[in] Size размер данных
-  \return Результат выполнения функции 
+/**РћС‚РїСЂР°РІРєР° РґР°РЅРЅС‹С… РІ РґР°С‚С‡РёРє 
+  \param[in] pSendBytes РѕС‚РїСЂР°РІР»СЏРµРјС‹Рµ РґР°РЅРЅС‹Рµ
+  \param[in] Size СЂР°Р·РјРµСЂ РґР°РЅРЅС‹С…
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */ 
 static uint32_t prvDeviceDS18B20WriteBytes(uint8_t* pSendBytes, uint32_t Size);
 
-/**Вычисление контрольной суммы CRC-8-Dallas/Maxim
-  \param[in] Data отправляемые данные
-  \param[in] Size размер данных
-  \return Результат выполнения функции 
+/**Р’С‹С‡РёСЃР»РµРЅРёРµ РєРѕРЅС‚СЂРѕР»СЊРЅРѕР№ СЃСѓРјРјС‹ CRC-8-Dallas/Maxim
+  \param[in] Data РѕС‚РїСЂР°РІР»СЏРµРјС‹Рµ РґР°РЅРЅС‹Рµ
+  \param[in] Size СЂР°Р·РјРµСЂ РґР°РЅРЅС‹С…
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */ 
 static uint32_t prvDeviceDS18B20crc8(uint8_t* Data, uint32_t Size);
 
-/*Вычисление контрольной суммы CRC-8-Dallas/Maxim*/
+/*Р’С‹С‡РёСЃР»РµРЅРёРµ РєРѕРЅС‚СЂРѕР»СЊРЅРѕР№ СЃСѓРјРјС‹ CRC-8-Dallas/Maxim*/
 static uint32_t prvDeviceDS18B20crc8(uint8_t* Data, uint32_t Size)
 {
   uint8_t crc = 0;
@@ -85,10 +85,10 @@ static uint32_t prvDeviceDS18B20crc8(uint8_t* Data, uint32_t Size)
   return crc;
 }
 
-/*Инициализация процесса обмена данными*/
+/*РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїСЂРѕС†РµСЃСЃР° РѕР±РјРµРЅР° РґР°РЅРЅС‹РјРё*/
 static uint32_t prvDeviceDS18B20InitSequence(ExtCodeDeviceDS18B20* pExCode)
 {
-  /*Проверка входных данных*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РґР°РЅРЅС‹С…*/
   if(!pExCode)
     return FUNC_INVALID_PARAM;  
     
@@ -102,7 +102,7 @@ static uint32_t prvDeviceDS18B20InitSequence(ExtCodeDeviceDS18B20* pExCode)
   
   TIMDelay(TIME_WAIT);
   
-  /*Время ожидания отклика от датчика*/
+  /*Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РѕС‚РєР»РёРєР° РѕС‚ РґР°С‚С‡РёРєР°*/
   uint8_t presenceFlag = FALSE;
    
   for(uint8_t i = 0; i < DS18B20_COUNT_TRYING; i++)
@@ -122,30 +122,30 @@ static uint32_t prvDeviceDS18B20InitSequence(ExtCodeDeviceDS18B20* pExCode)
     return FUNC_ERROR;
   }
   
-  /*Ожидание освобождения шины*/
+  /*РћР¶РёРґР°РЅРёРµ РѕСЃРІРѕР±РѕР¶РґРµРЅРёСЏ С€РёРЅС‹*/
   while(HAL_GPIO_ReadPin(DS18B20Dev.pGPIORXPort, DS18B20Dev.GPIORXNum) == GPIO_PIN_RESET); 
   
   return FUNC_OK;
 }
 
-/*Чтение данных памяти датчика*/
+/*Р§С‚РµРЅРёРµ РґР°РЅРЅС‹С… РїР°РјСЏС‚Рё РґР°С‚С‡РёРєР°*/
 static uint32_t prvDeviceDS18B20ReadScratchPad(uint8_t* pRecBytes)
 {
-  /*Проверка входных данных*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РґР°РЅРЅС‹С…*/
   if(!pRecBytes)
     return FUNC_INVALID_PARAM;     
   
   uint32_t Res;  
   uint8_t CurByte;
   
-  /*Установка режима чтения*/
+  /*РЈСЃС‚Р°РЅРѕРІРєР° СЂРµР¶РёРјР° С‡С‚РµРЅРёСЏ*/
   uint8_t Cmd = SKIP_ROM;
   Res = prvDeviceDS18B20WriteBytes(&Cmd, 1);  
   
   Cmd = READ_SCRATCHPAD;
   Res = prvDeviceDS18B20WriteBytes(&Cmd, 1);
   
-  /*Чтение данных из памяти*/
+  /*Р§С‚РµРЅРёРµ РґР°РЅРЅС‹С… РёР· РїР°РјСЏС‚Рё*/
   if(Res == FUNC_OK)
   {
     for(uint8_t i = 0; i < DS18B20_SCRATCHPAD_MEM_SIZE; i++)
@@ -172,16 +172,16 @@ static uint32_t prvDeviceDS18B20ReadScratchPad(uint8_t* pRecBytes)
   return Res;
 }
 
-/*Отправка данных в датчик*/
+/*РћС‚РїСЂР°РІРєР° РґР°РЅРЅС‹С… РІ РґР°С‚С‡РёРє*/
 static uint32_t prvDeviceDS18B20WriteBytes(uint8_t* pSendBytes, uint32_t Size)
 {
-  /*Проверка входных данных*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РґР°РЅРЅС‹С…*/
   if(!pSendBytes)
     return FUNC_INVALID_PARAM;  
   
   StatusReadConvertT = FALSE;
   
-  /*Запись данных*/
+  /*Р—Р°РїРёСЃСЊ РґР°РЅРЅС‹С…*/
   for(uint32_t i = 0; i < Size; i++)  
   {
     uint8_t CurByte = pSendBytes[i];
@@ -208,21 +208,21 @@ static uint32_t prvDeviceDS18B20WriteBytes(uint8_t* pSendBytes, uint32_t Size)
 
 /**
 @}
-  \defgroup module_DS18B20 Интерфейсные функции для работы с DS18B20
-  \brief Модуль, предоставляющий пользователю необходимый функционал для работы с микросхемой датчика температуры DS18B20
+  \defgroup module_DS18B20 РРЅС‚РµСЂС„РµР№СЃРЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ DS18B20
+  \brief РњРѕРґСѓР»СЊ, РїСЂРµРґРѕСЃС‚Р°РІР»СЏСЋС‰РёР№ РїРѕР»СЊР·РѕРІР°С‚РµР»СЋ РЅРµРѕР±С…РѕРґРёРјС‹Р№ С„СѓРЅРєС†РёРѕРЅР°Р» РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РјРёРєСЂРѕСЃС…РµРјРѕР№ РґР°С‚С‡РёРєР° С‚РµРјРїРµСЂР°С‚СѓСЂС‹ DS18B20
 @{
 */
 
-/*Инициализация драйвера датчика температуры*/
+/*РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РґСЂР°Р№РІРµСЂР° РґР°С‚С‡РёРєР° С‚РµРјРїРµСЂР°С‚СѓСЂС‹*/
 uint32_t DeviceDS18B20Create(DeviceDS18B20Param* pDevParam, ExtCodeDeviceDS18B20* pExCode)
 {  
-  /*Проверка входных данных*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РґР°РЅРЅС‹С…*/
   if(!pDevParam || !pExCode)
     return FUNC_INVALID_PARAM;
   
   *pExCode = DEVICE_DS18B20_NOT_CODE;
              
-  /*Инициализация GPIO*/
+  /*РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ GPIO*/
   uint32_t Res;
   GPIO_InitTypeDef GPIO_InitStruct;
   DS18B20Dev.pGPIOTXPort = 0;
@@ -262,10 +262,10 @@ uint32_t DeviceDS18B20Create(DeviceDS18B20Param* pDevParam, ExtCodeDeviceDS18B20
   return FUNC_OK;  
 }
 
-/*Запрос состояния готовности выдачи данных о температуре*/
+/*Р—Р°РїСЂРѕСЃ СЃРѕСЃС‚РѕСЏРЅРёСЏ РіРѕС‚РѕРІРЅРѕСЃС‚Рё РІС‹РґР°С‡Рё РґР°РЅРЅС‹С… Рѕ С‚РµРјРїРµСЂР°С‚СѓСЂРµ*/
 uint32_t DeviceDS18B20GetReadyTemperature(uint8_t* pTempReady)
 {
-  /*Проверка входных данных*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РґР°РЅРЅС‹С…*/
   if(!pTempReady)
     return FUNC_INVALID_PARAM;  
      
@@ -283,7 +283,7 @@ uint32_t DeviceDS18B20GetReadyTemperature(uint8_t* pTempReady)
   return FUNC_OK;
 }
 
-/*Запуск процесса конвертации данных о температуре*/
+/*Р—Р°РїСѓСЃРє РїСЂРѕС†РµСЃСЃР° РєРѕРЅРІРµСЂС‚Р°С†РёРё РґР°РЅРЅС‹С… Рѕ С‚РµРјРїРµСЂР°С‚СѓСЂРµ*/
 uint32_t DeviceDS18B20ConversionTemperature()
 {    
   uint32_t Res;  
@@ -313,10 +313,10 @@ uint32_t DeviceDS18B20ConversionTemperature()
   return FUNC_OK;
 }
 
-/*Чтение температуры с датчика*/
+/*Р§С‚РµРЅРёРµ С‚РµРјРїРµСЂР°С‚СѓСЂС‹ СЃ РґР°С‚С‡РёРєР°*/
 uint32_t DeviceDS18B20GetTemperature(int8_t* pTemp, ExtCodeDeviceDS18B20* pExCode)
 {
-  /*Проверка входных данных*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РґР°РЅРЅС‹С…*/
   if(!pExCode || !pTemp)
     return FUNC_INVALID_PARAM;  
     
@@ -331,7 +331,7 @@ uint32_t DeviceDS18B20GetTemperature(int8_t* pTemp, ExtCodeDeviceDS18B20* pExCod
   if(Res != FUNC_OK)
     return Res;  
   
-  /*Чтение данных с памяти датчика*/  
+  /*Р§С‚РµРЅРёРµ РґР°РЅРЅС‹С… СЃ РїР°РјСЏС‚Рё РґР°С‚С‡РёРєР°*/  
   Res = prvDeviceDS18B20ReadScratchPad(ArrayScratchPad);
   
   if(Res != FUNC_OK)

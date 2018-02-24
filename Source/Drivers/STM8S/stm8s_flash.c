@@ -1,6 +1,6 @@
 /**
   \file    stm8s_flash.c 
-  \brief   Исполняемый файл драйвера внутренней флеш-памяти STM8S
+  \brief   РСЃРїРѕР»РЅСЏРµРјС‹Р№ С„Р°Р№Р» РґСЂР°Р№РІРµСЂР° РІРЅСѓС‚СЂРµРЅРЅРµР№ С„Р»РµС€-РїР°РјСЏС‚Рё STM8S
   \author  JavaLandau
   \version 1.0
   \date    20.12.2017 
@@ -9,7 +9,7 @@
 #include "BitsMaskOperations.h"
 #include "stm8s_flash.h"
     
-/** @name Регистры FLASH
+/** @name Р РµРіРёСЃС‚СЂС‹ FLASH
 */                        
 ///@{
 #define FLASH_CR1               (((volatile char*)(0x00505A)))
@@ -22,7 +22,7 @@
 #define FLASH_DUKR              (((volatile char*)(0x005064)))
 ///@}
 
-/** @name Значения битов регистров FLASH
+/** @name Р—РЅР°С‡РµРЅРёСЏ Р±РёС‚РѕРІ СЂРµРіРёСЃС‚СЂРѕРІ FLASH
 */                        
 ///@{
 #define OPT                     7
@@ -44,25 +44,25 @@
 #define WR_PG_DIS               0
 ///@}
 
-/** @name MASS ключи для изменения настроек доступа к FLASH
+/** @name MASS РєР»СЋС‡Рё РґР»СЏ РёР·РјРµРЅРµРЅРёСЏ РЅР°СЃС‚СЂРѕРµРє РґРѕСЃС‚СѓРїР° Рє FLASH
 */                        
 ///@{
 #define FIRST_HWR_KEY           0xAE
 #define SECOND_HWR_KEY          0x56
 ///@}
 
-/*Разрешение доступа к option bytes для флеш-памяти*/
+/*Р Р°Р·СЂРµС€РµРЅРёРµ РґРѕСЃС‚СѓРїР° Рє option bytes РґР»СЏ С„Р»РµС€-РїР°РјСЏС‚Рё*/
 uint32_t stm8s_flash_OptionBytesEnable(void)
 {  
-  /*Запись MASS ключей для разблокировки EEPROM*/
+  /*Р—Р°РїРёСЃСЊ MASS РєР»СЋС‡РµР№ РґР»СЏ СЂР°Р·Р±Р»РѕРєРёСЂРѕРІРєРё EEPROM*/
   CHANGE_REG(FLASH_DUKR,FIRST_HWR_KEY);
   CHANGE_REG(FLASH_DUKR,SECOND_HWR_KEY);
   
-  /*Проверка разблокировки*/
+  /*РџСЂРѕРІРµСЂРєР° СЂР°Р·Р±Р»РѕРєРёСЂРѕРІРєРё*/
   if(GET_REG_BIT(FLASH_IAPSR,DUL) == RESET)
     return FUNC_ERROR;
   
-  /*Разрешение доступа к option bytes для флеш-памяти*/
+  /*Р Р°Р·СЂРµС€РµРЅРёРµ РґРѕСЃС‚СѓРїР° Рє option bytes РґР»СЏ С„Р»РµС€-РїР°РјСЏС‚Рё*/
   SET_REG_BIT(FLASH_CR2,OPT);
   RESET_REG_BIT(FLASH_NCR2,NOPT);
 
@@ -75,7 +75,7 @@ uint32_t stm8s_flash_OptionBytesEnable(void)
   return FUNC_OK;
 }
 
-/*Запрет доступа к option bytes для флеш-памяти*/
+/*Р—Р°РїСЂРµС‚ РґРѕСЃС‚СѓРїР° Рє option bytes РґР»СЏ С„Р»РµС€-РїР°РјСЏС‚Рё*/
 uint32_t stm8s_flash_OptionBytesDisable(void)
 {
   RESET_REG_BIT(FLASH_CR2,OPT);

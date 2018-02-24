@@ -1,6 +1,6 @@
 /**
   \file    stm8s_gpio.h
-  \brief   Заголовочный файл драйвера GPIO ядра STM8S
+  \brief   Р—Р°РіРѕР»РѕРІРѕС‡РЅС‹Р№ С„Р°Р№Р» РґСЂР°Р№РІРµСЂР° GPIO СЏРґСЂР° STM8S
   \author  JavaLandau
   \version 1.0
   \date    20.12.2017 
@@ -16,57 +16,57 @@
 @{
 */
 
-///Режим работы GPIO
+///Р РµР¶РёРј СЂР°Р±РѕС‚С‹ GPIO
 typedef enum _GPIOMode {
-  GPIO_FLOATING_INPUT                = 0x0,             ///<Плавающий вход
-  GPIO_INPUT_WITH_PULLUP             = 0x2,             ///<Вход с подтяжкой к питанию
-  GPIO_OUTPUT_PSEUDO_OPEN_DRAIN      = 0x1,             ///<Выход с эмуляцией режима "с открытым стоком"
-  GPIO_OUTPUT_PUSHPULL               = 0x3              ///<Двухтактный выход
+  GPIO_FLOATING_INPUT                = 0x0,             ///<РџР»Р°РІР°СЋС‰РёР№ РІС…РѕРґ
+  GPIO_INPUT_WITH_PULLUP             = 0x2,             ///<Р’С…РѕРґ СЃ РїРѕРґС‚СЏР¶РєРѕР№ Рє РїРёС‚Р°РЅРёСЋ
+  GPIO_OUTPUT_PSEUDO_OPEN_DRAIN      = 0x1,             ///<Р’С‹С…РѕРґ СЃ СЌРјСѓР»СЏС†РёРµР№ СЂРµР¶РёРјР° "СЃ РѕС‚РєСЂС‹С‚С‹Рј СЃС‚РѕРєРѕРј"
+  GPIO_OUTPUT_PUSHPULL               = 0x3              ///<Р”РІСѓС…С‚Р°РєС‚РЅС‹Р№ РІС‹С…РѕРґ
 } GPIOMode;
 
-///Скорость работы GPIO
+///РЎРєРѕСЂРѕСЃС‚СЊ СЂР°Р±РѕС‚С‹ GPIO
 typedef enum _GPIOSpeed {
-  GPIO_SPEED_2MHZ                    = 0x0,             ///<2 МГц
-  GPIO_SPEED_10MHZ                   = 0x1              ///<10 МГц
+  GPIO_SPEED_2MHZ                    = 0x0,             ///<2 РњР“С†
+  GPIO_SPEED_10MHZ                   = 0x1              ///<10 РњР“С†
 } GPIOSpeed;
 
-///Наименование порта GPIO
+///РќР°РёРјРµРЅРѕРІР°РЅРёРµ РїРѕСЂС‚Р° GPIO
 typedef enum _GPIOPort {
-  GPIO_PORT_A                        = 0x00,            ///<Порт A
-  GPIO_PORT_B                        = 0x05,            ///<Порт B  
-  GPIO_PORT_C                        = 0x0A,            ///<Порт C
-  GPIO_PORT_D                        = 0x0F,            ///<Порт D
-  GPIO_PORT_E                        = 0x14,            ///<Порт E
-  GPIO_PORT_F                        = 0x19,            ///<Порт F
-  GPIO_PORT_G                        = 0x1E,            ///<Порт G
-  GPIO_PORT_H                        = 0x23,            ///<Порт H
-  GPIO_PORT_I                        = 0x28             ///<Порт I
+  GPIO_PORT_A                        = 0x00,            ///<РџРѕСЂС‚ A
+  GPIO_PORT_B                        = 0x05,            ///<РџРѕСЂС‚ B  
+  GPIO_PORT_C                        = 0x0A,            ///<РџРѕСЂС‚ C
+  GPIO_PORT_D                        = 0x0F,            ///<РџРѕСЂС‚ D
+  GPIO_PORT_E                        = 0x14,            ///<РџРѕСЂС‚ E
+  GPIO_PORT_F                        = 0x19,            ///<РџРѕСЂС‚ F
+  GPIO_PORT_G                        = 0x1E,            ///<РџРѕСЂС‚ G
+  GPIO_PORT_H                        = 0x23,            ///<РџРѕСЂС‚ H
+  GPIO_PORT_I                        = 0x28             ///<РџРѕСЂС‚ I
 } GPIOPort;
 
-///Структура GPIO
+///РЎС‚СЂСѓРєС‚СѓСЂР° GPIO
 typedef struct _GPIOType {
-  GPIOMode          Mode;                               ///<Режим 
-  GPIOSpeed         Speed;                              ///<Скорость
-  HwrIntFunc        FuncCallback;                       ///<Обработчик прерываний
-  void*             UserData;                           ///<Указатель на пользовательские данные          
-  char              NumPin;                             ///<Номер вывода
-  GPIOPort          NumPort;                            ///<Номер порта
+  GPIOMode          Mode;                               ///<Р РµР¶РёРј 
+  GPIOSpeed         Speed;                              ///<РЎРєРѕСЂРѕСЃС‚СЊ
+  HwrIntFunc        FuncCallback;                       ///<РћР±СЂР°Р±РѕС‚С‡РёРє РїСЂРµСЂС‹РІР°РЅРёР№
+  void*             UserData;                           ///<РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёРµ РґР°РЅРЅС‹Рµ          
+  char              NumPin;                             ///<РќРѕРјРµСЂ РІС‹РІРѕРґР°
+  GPIOPort          NumPort;                            ///<РќРѕРјРµСЂ РїРѕСЂС‚Р°
 } GPIOType;
 
-#define GPIO_OUTPUT_LOW             0                   ///<Выход "0"
-#define GPIO_OUTPUT_HIGH            1                   ///<Выход "1"
+#define GPIO_OUTPUT_LOW             0                   ///<Р’С‹С…РѕРґ "0"
+#define GPIO_OUTPUT_HIGH            1                   ///<Р’С‹С…РѕРґ "1"
 
-/**Инициализация GPIO
-  \param[in] GPIODef структура GPIO
-  \return Результат выполнения функции
+/**РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ GPIO
+  \param[in] GPIODef СЃС‚СЂСѓРєС‚СѓСЂР° GPIO
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
 */
 uint32_t stm8s_gpio_Init(GPIOType* GPIODef);
 
-/**Установка выхода GPIO
-  \param[in] NumPort номер порта GPIO
-  \param[in] NumPin номер вывода GPIO
-  \param[in] GPIOValue значение выхода
-  \return Результат выполнения функции
+/**РЈСЃС‚Р°РЅРѕРІРєР° РІС‹С…РѕРґР° GPIO
+  \param[in] NumPort РЅРѕРјРµСЂ РїРѕСЂС‚Р° GPIO
+  \param[in] NumPin РЅРѕРјРµСЂ РІС‹РІРѕРґР° GPIO
+  \param[in] GPIOValue Р·РЅР°С‡РµРЅРёРµ РІС‹С…РѕРґР°
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
 */
 uint32_t stm8s_gpio_Set(GPIOPort NumPort, char NumPin, char GPIOValue);
 

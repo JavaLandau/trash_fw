@@ -1,6 +1,6 @@
 /**
   \file    GPIOfun.c 
-  \brief   Исполняемый файл функций для работы с GPIO
+  \brief   РСЃРїРѕР»РЅСЏРµРјС‹Р№ С„Р°Р№Р» С„СѓРЅРєС†РёР№ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ GPIO
   \author  JavaLandau
   \version 1.0
   \date    20.12.2017 
@@ -10,7 +10,7 @@
 #include "TypesDefine.h"
 #include "GPIOfun.h"
 
-/** @name Символьное представление портов GPIO
+/** @name РЎРёРјРІРѕР»СЊРЅРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РїРѕСЂС‚РѕРІ GPIO
 */                        
 ///@{
 #define PORT_A                          'A'
@@ -22,13 +22,13 @@
 #define PORT_G                          'G'
 ///@}
 
-///Номер GPIO в порте
+///РќРѕРјРµСЂ GPIO РІ РїРѕСЂС‚Рµ
 #define GET_GPIO_NUM(NUM)               (GPIO_PIN_0 << (NUM))
 
-/*Получение номера GPIO по строковому описанию*/
+/*РџРѕР»СѓС‡РµРЅРёРµ РЅРѕРјРµСЂР° GPIO РїРѕ СЃС‚СЂРѕРєРѕРІРѕРјСѓ РѕРїРёСЃР°РЅРёСЋ*/
 uint32_t GPIOGetPort(const char* StrGPIOPin, GPIO_TypeDef** ppGPIOPort, uint16_t* pGPIONum)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!ppGPIOPort || ! pGPIONum || !StrGPIOPin)
     return FUNC_INVALID_PARAM;
   

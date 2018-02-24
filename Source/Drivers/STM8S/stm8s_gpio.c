@@ -1,6 +1,6 @@
 /**
   \file    stm8s_gpio.c 
-  \brief   Исполняемый файл драйвера GPIO ядра STM8S
+  \brief   РСЃРїРѕР»РЅСЏРµРјС‹Р№ С„Р°Р№Р» РґСЂР°Р№РІРµСЂР° GPIO СЏРґСЂР° STM8S
   \author  JavaLandau
   \version 1.0
   \date    20.12.2017 
@@ -10,12 +10,12 @@
 #include "BitsMaskOperations.h"
 
 /**
-  \defgroup module_service_STM8S_GPIO Служебные функции для работы с GPIO ядра STM8S
-  \brief Модуль служебных функций, необходимых для работы с GPIO ядра STM8S
+  \defgroup module_service_STM8S_GPIO РЎР»СѓР¶РµР±РЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ GPIO СЏРґСЂР° STM8S
+  \brief РњРѕРґСѓР»СЊ СЃР»СѓР¶РµР±РЅС‹С… С„СѓРЅРєС†РёР№, РЅРµРѕР±С…РѕРґРёРјС‹С… РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ GPIO СЏРґСЂР° STM8S
 @{
 */
 
-/** @name Регистры GPIO
+/** @name Р РµРіРёСЃС‚СЂС‹ GPIO
 */                        
 ///@{
 //Port A
@@ -74,38 +74,38 @@
 #define PI_CR2                  (((volatile char*)(0x00502C)))
 ///@}
 
-///Количество выводов GPIO на порт
+///РљРѕР»РёС‡РµСЃС‚РІРѕ РІС‹РІРѕРґРѕРІ GPIO РЅР° РїРѕСЂС‚
 #define NUM_PIN_FOR_PORT        8
 
-/**Проверка корректности наименования порта GPIO
-  \param[in] Port порт GPIO
-  \return Результат выполнения функции
+/**РџСЂРѕРІРµСЂРєР° РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚Рё РЅР°РёРјРµРЅРѕРІР°РЅРёСЏ РїРѕСЂС‚Р° GPIO
+  \param[in] Port РїРѕСЂС‚ GPIO
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
 */
 uint32_t prv_stm8s_gpio_CheckPort(GPIOPort Port);
 
-/**Проверка корректности наименования режима работы GPIO
-  \param[in] Mode режим работы GPIO
-  \return Результат выполнения функции
+/**РџСЂРѕРІРµСЂРєР° РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚Рё РЅР°РёРјРµРЅРѕРІР°РЅРёСЏ СЂРµР¶РёРјР° СЂР°Р±РѕС‚С‹ GPIO
+  \param[in] Mode СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ GPIO
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
 */
 uint32_t prv_stm8s_gpio_CheckMode(GPIOMode Mode);
 
-/**Проверка корректности наименования скорости работы GPIO
-  \param[in] Speed скорость работы GPIO
-  \return Результат выполнения функции
+/**РџСЂРѕРІРµСЂРєР° РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚Рё РЅР°РёРјРµРЅРѕРІР°РЅРёСЏ СЃРєРѕСЂРѕСЃС‚Рё СЂР°Р±РѕС‚С‹ GPIO
+  \param[in] Speed СЃРєРѕСЂРѕСЃС‚СЊ СЂР°Р±РѕС‚С‹ GPIO
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
 */
 uint32_t prv_stm8s_gpio_CheckSpeed(GPIOSpeed Speed);
 
 /**
 @}
-  \defgroup module_STM8S_GPIO Интерфейсные функции для работы с GPIO ядра STM8S
-  \brief Модуль, предоставляющий пользователю необходимый функционал для работы с GPIO ядра STM8S
+  \defgroup module_STM8S_GPIO РРЅС‚РµСЂС„РµР№СЃРЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ GPIO СЏРґСЂР° STM8S
+  \brief РњРѕРґСѓР»СЊ, РїСЂРµРґРѕСЃС‚Р°РІР»СЏСЋС‰РёР№ РїРѕР»СЊР·РѕРІР°С‚РµР»СЋ РЅРµРѕР±С…РѕРґРёРјС‹Р№ С„СѓРЅРєС†РёРѕРЅР°Р» РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ GPIO СЏРґСЂР° STM8S
 @{
 */
 
-/*Установка выхода GPIO*/
+/*РЈСЃС‚Р°РЅРѕРІРєР° РІС‹С…РѕРґР° GPIO*/
 uint32_t stm8s_gpio_Set(GPIOPort NumPort, char NumPin, char GPIOValue)
 {
-  /*Проверка выходных данных*/
+  /*РџСЂРѕРІРµСЂРєР° РІС‹С…РѕРґРЅС‹С… РґР°РЅРЅС‹С…*/
   if(GPIOValue != GPIO_OUTPUT_LOW && GPIOValue != GPIO_OUTPUT_HIGH)
     return FUNC_INVALID_PARAM;
     
@@ -115,21 +115,21 @@ uint32_t stm8s_gpio_Set(GPIOPort NumPort, char NumPin, char GPIOValue)
     return FUNC_INVALID_PARAM;
   }    
   
-  /*Установка значений в соответствующий регистр Px_ODR*/
+  /*РЈСЃС‚Р°РЅРѕРІРєР° Р·РЅР°С‡РµРЅРёР№ РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёР№ СЂРµРіРёСЃС‚СЂ Px_ODR*/
   volatile char* GPIORegAddr = PA_ODR + (char)NumPort;
   CHANGE_REG_BIT(GPIORegAddr, NumPin, GPIOValue);
 
-  /*Верификация*/
+  /*Р’РµСЂРёС„РёРєР°С†РёСЏ*/
   if(GET_REG_BIT(GPIORegAddr, NumPin) != GPIOValue)
     return FUNC_ERROR;
 
   return FUNC_OK;
 }
 
-/*Инициализация GPIO*/
+/*РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ GPIO*/
 uint32_t stm8s_gpio_Init(GPIOType* GPIODef)
 {
-  /*Проверка выходных данных*/
+  /*РџСЂРѕРІРµСЂРєР° РІС‹С…РѕРґРЅС‹С… РґР°РЅРЅС‹С…*/
   if(!GPIODef)
     return FUNC_INVALID_PARAM;
       
@@ -141,18 +141,18 @@ uint32_t stm8s_gpio_Init(GPIOType* GPIODef)
     return FUNC_INVALID_PARAM;
   }
  
-  /*Получение адреса соответствующего регистра Px_ODR*/
+  /*РџРѕР»СѓС‡РµРЅРёРµ Р°РґСЂРµСЃР° СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРіРѕ СЂРµРіРёСЃС‚СЂР° Px_ODR*/
   volatile char* GPIORegAddr = PA_ODR + (char)GPIODef->NumPort;
   
-  /*Получение адреса и изменение соответствующего регистра Px_DDR*/
+  /*РџРѕР»СѓС‡РµРЅРёРµ Р°РґСЂРµСЃР° Рё РёР·РјРµРЅРµРЅРёРµ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРіРѕ СЂРµРіРёСЃС‚СЂР° Px_DDR*/
   GPIORegAddr+=0x2;
   CHANGE_REG_BIT(GPIORegAddr, GPIODef->NumPin, GET_BIT((char)GPIODef->Mode,0));
   
-  /*Получение адреса и изменение соответствующего регистра Px_CR1*/
+  /*РџРѕР»СѓС‡РµРЅРёРµ Р°РґСЂРµСЃР° Рё РёР·РјРµРЅРµРЅРёРµ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРіРѕ СЂРµРіРёСЃС‚СЂР° Px_CR1*/
   GPIORegAddr++;
   CHANGE_REG_BIT(GPIORegAddr, GPIODef->NumPin, GET_BIT((char)GPIODef->Mode,1));
   
-  /*Получение адреса и изменение соответствующего регистра Px_CR2*/
+  /*РџРѕР»СѓС‡РµРЅРёРµ Р°РґСЂРµСЃР° Рё РёР·РјРµРЅРµРЅРёРµ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРіРѕ СЂРµРіРёСЃС‚СЂР° Px_CR2*/
   GPIORegAddr++;
   if(GET_BIT(GPIODef->Mode,0) == RESET)
   {
@@ -167,7 +167,7 @@ uint32_t stm8s_gpio_Init(GPIOType* GPIODef)
   return FUNC_OK;
 }
 
-/*Проверка корректности наименования скорости работы GPIO*/
+/*РџСЂРѕРІРµСЂРєР° РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚Рё РЅР°РёРјРµРЅРѕРІР°РЅРёСЏ СЃРєРѕСЂРѕСЃС‚Рё СЂР°Р±РѕС‚С‹ GPIO*/
 uint32_t prv_stm8s_gpio_CheckSpeed(GPIOSpeed Speed)
 {
   if(Speed != GPIO_SPEED_2MHZ && Speed != GPIO_SPEED_10MHZ)
@@ -176,7 +176,7 @@ uint32_t prv_stm8s_gpio_CheckSpeed(GPIOSpeed Speed)
   return FUNC_OK;  
 }
 
-/*Проверка корректности наименования режима работы GPIO*/
+/*РџСЂРѕРІРµСЂРєР° РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚Рё РЅР°РёРјРµРЅРѕРІР°РЅРёСЏ СЂРµР¶РёРјР° СЂР°Р±РѕС‚С‹ GPIO*/
 uint32_t prv_stm8s_gpio_CheckMode(GPIOMode Mode)
 {
   if(Mode != GPIO_FLOATING_INPUT && Mode != GPIO_INPUT_WITH_PULLUP &&
@@ -188,7 +188,7 @@ uint32_t prv_stm8s_gpio_CheckMode(GPIOMode Mode)
   return FUNC_OK;
 }
 
-/*Проверка корректности наименования порта GPIO*/
+/*РџСЂРѕРІРµСЂРєР° РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚Рё РЅР°РёРјРµРЅРѕРІР°РЅРёСЏ РїРѕСЂС‚Р° GPIO*/
 uint32_t prv_stm8s_gpio_CheckPort(GPIOPort Port)
 {
   if(Port != GPIO_PORT_A && Port != GPIO_PORT_B && Port != GPIO_PORT_C && 

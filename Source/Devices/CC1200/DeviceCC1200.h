@@ -1,6 +1,6 @@
 /**
   \file    DeviceCC1200.h
-  \brief   Заголовочный файл драйвера приёмопередатчика CC1200
+  \brief   Р—Р°РіРѕР»РѕРІРѕС‡РЅС‹Р№ С„Р°Р№Р» РґСЂР°Р№РІРµСЂР° РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР° CC1200
   \author  JavaLandau
   \version 1.0
   \date    20.12.2017 
@@ -20,96 +20,96 @@
 @{
 */
 
-///Время ожидания приёма данных не ограничено
+///Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РїСЂРёС‘РјР° РґР°РЅРЅС‹С… РЅРµ РѕРіСЂР°РЅРёС‡РµРЅРѕ
 #define CC1200_RECEIVE_WAIT_FOREVER     0                       
 
-///Режимы работы приёмопередатчика
+///Р РµР¶РёРјС‹ СЂР°Р±РѕС‚С‹ РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°
 typedef enum _DeviceCC1200Mode {
-  DEVICE_CC1200_IDLE = 0x0,                     ///<Ожидание
-  DEVICE_CC1200_SLEEP,                          ///<Сон
-  DEVICE_CC1200_RECEIVE,                        ///<Приём
-  DEVICE_CC1200_TRANSMIT                        ///<Передача
+  DEVICE_CC1200_IDLE = 0x0,                     ///<РћР¶РёРґР°РЅРёРµ
+  DEVICE_CC1200_SLEEP,                          ///<РЎРѕРЅ
+  DEVICE_CC1200_RECEIVE,                        ///<РџСЂРёС‘Рј
+  DEVICE_CC1200_TRANSMIT                        ///<РџРµСЂРµРґР°С‡Р°
 } DeviceCC1200Mode;
 
-///Структура драйвера приёмопередатчика
+///РЎС‚СЂСѓРєС‚СѓСЂР° РґСЂР°Р№РІРµСЂР° РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°
 typedef struct _DeviceCC1200 {
-  SPI_HandleTypeDef SPIDrv;                     ///<Указатель на структуру драйвера SPI
-  DMA_HandleTypeDef  DMATXDrv;                  ///<Указатель на структуру драйвера SPI DMA TX
-  DMA_HandleTypeDef  DMARXDrv;                  ///<Указатель на структуру драйвера SPI DMA RX
-  DeviceCC1200Mode   DevMode;                   ///<Режим работы приёмопередатчика
-  uint8_t            DevAddr;                   ///<Адрес устройства в беспроводной сети
+  SPI_HandleTypeDef SPIDrv;                     ///<РЈРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР° SPI
+  DMA_HandleTypeDef  DMATXDrv;                  ///<РЈРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР° SPI DMA TX
+  DMA_HandleTypeDef  DMARXDrv;                  ///<РЈРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР° SPI DMA RX
+  DeviceCC1200Mode   DevMode;                   ///<Р РµР¶РёРј СЂР°Р±РѕС‚С‹ РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°
+  uint8_t            DevAddr;                   ///<РђРґСЂРµСЃ СѓСЃС‚СЂРѕР№СЃС‚РІР° РІ Р±РµСЃРїСЂРѕРІРѕРґРЅРѕР№ СЃРµС‚Рё
   
-  osSemaphoreId      SemIDSyncDMA;              ///<Семафор ожидания окончания приёма/передачи данных по DMA
+  osSemaphoreId      SemIDSyncDMA;              ///<РЎРµРјР°С„РѕСЂ РѕР¶РёРґР°РЅРёСЏ РѕРєРѕРЅС‡Р°РЅРёСЏ РїСЂРёС‘РјР°/РїРµСЂРµРґР°С‡Рё РґР°РЅРЅС‹С… РїРѕ DMA
 } DeviceCC1200;
 
-///Структура параметров инициализации драйвера приёмопередатчика
+///РЎС‚СЂСѓРєС‚СѓСЂР° РїР°СЂР°РјРµС‚СЂРѕРІ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РґСЂР°Р№РІРµСЂР° РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°
 typedef struct _DeviceCC1200Param {
-  SPI_TypeDef*          pInstanceSPIDrv;        ///<Указатель на параметры драйвера SPI
-  uint32_t              BaudRateSPIPrescaler;   ///<Скорость работы SPI 
-  DMA_Stream_TypeDef*   pInstanceDMATXDrv;      ///<Указатель на параметры драйвера SPI DMA TX
-  DMA_Stream_TypeDef*   pInstanceDMARXDrv;      ///<Указатель на параметры драйвера SPI DMA RX
-  uint32_t              DMATXChannel;           ///<Номер канала SPI DMA TX
-  uint32_t              DMARXChannel;           ///<Номер канала SPI DMA RX
-  uint8_t               DevAddr;                ///<Адрес устройства в беспроводной сети
+  SPI_TypeDef*          pInstanceSPIDrv;        ///<РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РїР°СЂР°РјРµС‚СЂС‹ РґСЂР°Р№РІРµСЂР° SPI
+  uint32_t              BaudRateSPIPrescaler;   ///<РЎРєРѕСЂРѕСЃС‚СЊ СЂР°Р±РѕС‚С‹ SPI 
+  DMA_Stream_TypeDef*   pInstanceDMATXDrv;      ///<РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РїР°СЂР°РјРµС‚СЂС‹ РґСЂР°Р№РІРµСЂР° SPI DMA TX
+  DMA_Stream_TypeDef*   pInstanceDMARXDrv;      ///<РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РїР°СЂР°РјРµС‚СЂС‹ РґСЂР°Р№РІРµСЂР° SPI DMA RX
+  uint32_t              DMATXChannel;           ///<РќРѕРјРµСЂ РєР°РЅР°Р»Р° SPI DMA TX
+  uint32_t              DMARXChannel;           ///<РќРѕРјРµСЂ РєР°РЅР°Р»Р° SPI DMA RX
+  uint8_t               DevAddr;                ///<РђРґСЂРµСЃ СѓСЃС‚СЂРѕР№СЃС‚РІР° РІ Р±РµСЃРїСЂРѕРІРѕРґРЅРѕР№ СЃРµС‚Рё
 } DeviceCC1200Param;
 
-///Специальные коды ошибок
+///РЎРїРµС†РёР°Р»СЊРЅС‹Рµ РєРѕРґС‹ РѕС€РёР±РѕРє
 typedef enum _ExtCodeDeviceCC1200 {
-  DEVICE_CC1200_NOT_CODE = 0,                   ///<Ошибок нет
-  DEVICE_CC1200_ERROR_TIMEOUT,                  ///<Время ожидания истекло
-  DEVICE_CC1200_ERROR_INIT_SPI,                 ///<Ошибка инициализации SPI
-  DEVICE_CC1200_ERROR_INIT_DMA,                 ///<Ошибка инициализации DMA
-  DEVICE_CC1200_ERROR_PROCESS_DMA,              ///<Ошибка при работе с DMA
-  DEVICE_CC1200_ERROR_WRITE_SPI,                ///<Ошибка записи данных по SPI
-  DEVICE_CC1200_ERROR_RX_BUF_TIMEOUT,           ///<Время ожидания приёма данных истекло
-  DEVICE_CC1200_ERROR_RX_BUF_UNDERFLOW,         ///<Буфер RX пустой
-  DEVICE_CC1200_ERROR_RX_BUF_OVERFLOW,          ///<Буфер RX переполнен
-  DEVICE_CC1200_ERROR_RX_BUF_ERROR,             ///<Ошибка при работе с буфером RX
-  DEVICE_CC1200_ERROR_TX_BUF_UNDERFLOW,         ///<Буфер TX пустой
-  DEVICE_CC1200_ERROR_TX_BUF_OVERFLOW,          ///<Буфер TX переполнен
-  DEVICE_CC1200_ERROR_TX_BUF_ERROR,             ///<Ошибка при работе с буфером TX
-  DEVICE_CC1200_ERROR_RECEIVE                   ///<Ошибка приёма данных
+  DEVICE_CC1200_NOT_CODE = 0,                   ///<РћС€РёР±РѕРє РЅРµС‚
+  DEVICE_CC1200_ERROR_TIMEOUT,                  ///<Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РёСЃС‚РµРєР»Рѕ
+  DEVICE_CC1200_ERROR_INIT_SPI,                 ///<РћС€РёР±РєР° РёРЅРёС†РёР°Р»РёР·Р°С†РёРё SPI
+  DEVICE_CC1200_ERROR_INIT_DMA,                 ///<РћС€РёР±РєР° РёРЅРёС†РёР°Р»РёР·Р°С†РёРё DMA
+  DEVICE_CC1200_ERROR_PROCESS_DMA,              ///<РћС€РёР±РєР° РїСЂРё СЂР°Р±РѕС‚Рµ СЃ DMA
+  DEVICE_CC1200_ERROR_WRITE_SPI,                ///<РћС€РёР±РєР° Р·Р°РїРёСЃРё РґР°РЅРЅС‹С… РїРѕ SPI
+  DEVICE_CC1200_ERROR_RX_BUF_TIMEOUT,           ///<Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РїСЂРёС‘РјР° РґР°РЅРЅС‹С… РёСЃС‚РµРєР»Рѕ
+  DEVICE_CC1200_ERROR_RX_BUF_UNDERFLOW,         ///<Р‘СѓС„РµСЂ RX РїСѓСЃС‚РѕР№
+  DEVICE_CC1200_ERROR_RX_BUF_OVERFLOW,          ///<Р‘СѓС„РµСЂ RX РїРµСЂРµРїРѕР»РЅРµРЅ
+  DEVICE_CC1200_ERROR_RX_BUF_ERROR,             ///<РћС€РёР±РєР° РїСЂРё СЂР°Р±РѕС‚Рµ СЃ Р±СѓС„РµСЂРѕРј RX
+  DEVICE_CC1200_ERROR_TX_BUF_UNDERFLOW,         ///<Р‘СѓС„РµСЂ TX РїСѓСЃС‚РѕР№
+  DEVICE_CC1200_ERROR_TX_BUF_OVERFLOW,          ///<Р‘СѓС„РµСЂ TX РїРµСЂРµРїРѕР»РЅРµРЅ
+  DEVICE_CC1200_ERROR_TX_BUF_ERROR,             ///<РћС€РёР±РєР° РїСЂРё СЂР°Р±РѕС‚Рµ СЃ Р±СѓС„РµСЂРѕРј TX
+  DEVICE_CC1200_ERROR_RECEIVE                   ///<РћС€РёР±РєР° РїСЂРёС‘РјР° РґР°РЅРЅС‹С…
 } ExtCodeDeviceCC1200;
 
-/**Инициализация драйвера приёмопередатчика
-  \param[in] pDevParam указатель на структуру параметров для инициализации драйвера
-  \param[in] pDev указатель на структуру драйвера
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РґСЂР°Р№РІРµСЂР° РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°
+  \param[in] pDevParam СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РїР°СЂР°РјРµС‚СЂРѕРІ РґР»СЏ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РґСЂР°Р№РІРµСЂР°
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */ 
 uint32_t DeviceCC1200Create(DeviceCC1200Param* pDevParam, DeviceCC1200* pDev, ExtCodeDeviceCC1200* pExCode);
 
-/**Приём пакета данных фиксированного размера
-  \param[in] pDev указатель на структуру драйвера
-  \param[in] FixNumPacket размер пакета данных
-  \param[out] pPacket принимаемый пакет данных
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \param[in] Waiting время ожидания прёма данных
-  \return Результат выполнения функции 
+/**РџСЂРёС‘Рј РїР°РєРµС‚Р° РґР°РЅРЅС‹С… С„РёРєСЃРёСЂРѕРІР°РЅРЅРѕРіРѕ СЂР°Р·РјРµСЂР°
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[in] FixNumPacket СЂР°Р·РјРµСЂ РїР°РєРµС‚Р° РґР°РЅРЅС‹С…
+  \param[out] pPacket РїСЂРёРЅРёРјР°РµРјС‹Р№ РїР°РєРµС‚ РґР°РЅРЅС‹С…
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \param[in] Waiting РІСЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РїСЂС‘РјР° РґР°РЅРЅС‹С…
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */ 
 uint32_t DeviceCC1200ReceiveFixPacket(DeviceCC1200* pDev, uint8_t FixNumPacket, uint8_t* pPacket, ExtCodeDeviceCC1200* pExCode, uint32_t Waiting);
 
-/**Передача пакета данных фиксированного размера
-  \param[in] pDev указатель на структуру драйвера
-  \param[in] FixNumPacket размер пакета данных
-  \param[out] pPacket передаваемый пакет данных
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**РџРµСЂРµРґР°С‡Р° РїР°РєРµС‚Р° РґР°РЅРЅС‹С… С„РёРєСЃРёСЂРѕРІР°РЅРЅРѕРіРѕ СЂР°Р·РјРµСЂР°
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[in] FixNumPacket СЂР°Р·РјРµСЂ РїР°РєРµС‚Р° РґР°РЅРЅС‹С…
+  \param[out] pPacket РїРµСЂРµРґР°РІР°РµРјС‹Р№ РїР°РєРµС‚ РґР°РЅРЅС‹С…
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */ 
 uint32_t DeviceCC1200TransmitFixPacket(DeviceCC1200* pDev, uint8_t FixNumPacket, uint8_t* pPacket, ExtCodeDeviceCC1200* pExCode);
 
-/**Перезагрузка приёмопередатчика
-  \param[in] pDev указатель на структуру драйвера
-  \param[out] pExCode специальный код ошибки выполнения функции  
-  \return Результат выполнения функции 
+/**РџРµСЂРµР·Р°РіСЂСѓР·РєР° РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё  
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */
 uint32_t DeviceCC1200Reset(DeviceCC1200* pDev, ExtCodeDeviceCC1200* pExCode);
 
-/**Чтение состояния приёмопередатчика
-  \param[in] pDev указатель на структуру драйвера
-  \param[out] pChipStatusByte состояние приёмопередатчика
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**Р§С‚РµРЅРёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[out] pChipStatusByte СЃРѕСЃС‚РѕСЏРЅРёРµ РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */ 
 uint32_t DeviceCC1200ReadChipStatus(DeviceCC1200* pDev, uint8_t* pChipStatusByte, ExtCodeDeviceCC1200* pExCode);
 

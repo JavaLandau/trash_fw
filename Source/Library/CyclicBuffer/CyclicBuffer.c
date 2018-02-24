@@ -1,6 +1,6 @@
 /**
   \file    CyclicBuffer.c 
-  \brief   Исполняемый файл циклического буфера
+  \brief   РСЃРїРѕР»РЅСЏРµРјС‹Р№ С„Р°Р№Р» С†РёРєР»РёС‡РµСЃРєРѕРіРѕ Р±СѓС„РµСЂР°
   \author  JavaLandau
   \version 1.0
   \date    20.12.2017 
@@ -12,7 +12,7 @@
 #include "CyclicBuffer.h"
 #include "TypesDefine.h"
 
-/*Инициализация циклического буфера*/
+/*РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ С†РёРєР»РёС‡РµСЃРєРѕРіРѕ Р±СѓС„РµСЂР°*/
 uint8_t CyclicBufferCreate(CyclicBuff* pCyclicBuff, uint32_t SizeBuff)
 {
   if(!pCyclicBuff || !SizeBuff)
@@ -32,7 +32,7 @@ uint8_t CyclicBufferCreate(CyclicBuff* pCyclicBuff, uint32_t SizeBuff)
   return FUNC_OK;  
 }
 
-/*Запись байта в циклический буфер*/
+/*Р—Р°РїРёСЃСЊ Р±Р°Р№С‚Р° РІ С†РёРєР»РёС‡РµСЃРєРёР№ Р±СѓС„РµСЂ*/
 uint8_t CyclicBufferPut(CyclicBuff* pCyclicBuff, uint8_t PutByte, ExtCodeCyclicBuff* pExtCode)
 {
   if(!pCyclicBuff || !pExtCode)
@@ -64,7 +64,7 @@ uint8_t CyclicBufferPut(CyclicBuff* pCyclicBuff, uint8_t PutByte, ExtCodeCyclicB
   return FUNC_OK;
 }
 
-/*Чтение байта из циклического буфера*/
+/*Р§С‚РµРЅРёРµ Р±Р°Р№С‚Р° РёР· С†РёРєР»РёС‡РµСЃРєРѕРіРѕ Р±СѓС„РµСЂР°*/
 uint8_t CyclicBufferGet(CyclicBuff* pCyclicBuff, uint8_t* pGetByte, ExtCodeCyclicBuff* pExtCode)
 {
   if(!pCyclicBuff || !pExtCode || !pGetByte)
@@ -96,7 +96,7 @@ uint8_t CyclicBufferGet(CyclicBuff* pCyclicBuff, uint8_t* pGetByte, ExtCodeCycli
   return FUNC_OK;
 }
 
-/*Сброс циклического буфера*/
+/*РЎР±СЂРѕСЃ С†РёРєР»РёС‡РµСЃРєРѕРіРѕ Р±СѓС„РµСЂР°*/
 uint8_t CyclicBufferReset(CyclicBuff* pCyclicBuff, ExtCodeCyclicBuff* pExtCode)
 {
   if(!pCyclicBuff || !pExtCode)
@@ -118,7 +118,7 @@ uint8_t CyclicBufferReset(CyclicBuff* pCyclicBuff, ExtCodeCyclicBuff* pExtCode)
   return FUNC_OK;  
 }
 
-/*Размер циклического буфера, доступный для записи*/
+/*Р Р°Р·РјРµСЂ С†РёРєР»РёС‡РµСЃРєРѕРіРѕ Р±СѓС„РµСЂР°, РґРѕСЃС‚СѓРїРЅС‹Р№ РґР»СЏ Р·Р°РїРёСЃРё*/
 uint8_t CyclicBufferGetWriteSize(CyclicBuff* pCyclicBuff, uint32_t* pWriteSize, ExtCodeCyclicBuff* pExtCode)
 {
   if(!pCyclicBuff || !pExtCode || !pWriteSize)
@@ -147,7 +147,7 @@ uint8_t CyclicBufferGetWriteSize(CyclicBuff* pCyclicBuff, uint32_t* pWriteSize, 
   return FUNC_OK;
 }
 
-/*Размер циклического буфера, доступный для чтения*/
+/*Р Р°Р·РјРµСЂ С†РёРєР»РёС‡РµСЃРєРѕРіРѕ Р±СѓС„РµСЂР°, РґРѕСЃС‚СѓРїРЅС‹Р№ РґР»СЏ С‡С‚РµРЅРёСЏ*/
 uint8_t CyclicBufferGetReadSize(CyclicBuff* pCyclicBuff, uint32_t* pReadSize, ExtCodeCyclicBuff* pExtCode)
 {
   if(!pCyclicBuff || !pExtCode || !pReadSize)
@@ -176,7 +176,7 @@ uint8_t CyclicBufferGetReadSize(CyclicBuff* pCyclicBuff, uint32_t* pReadSize, Ex
   return FUNC_OK;
 }
 
-/*Деинициализация циклического буфера*/
+/*Р”РµРёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ С†РёРєР»РёС‡РµСЃРєРѕРіРѕ Р±СѓС„РµСЂР°*/
 uint8_t CyclicBufferDestroy(CyclicBuff* pCyclicBuff)
 {
   if(!pCyclicBuff)

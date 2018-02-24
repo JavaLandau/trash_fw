@@ -1,6 +1,6 @@
 /**
   \file    stm8s_clk.c 
-  \brief   Исполняемый файл драйвера системы тактирования ядра STM8S
+  \brief   РСЃРїРѕР»РЅСЏРµРјС‹Р№ С„Р°Р№Р» РґСЂР°Р№РІРµСЂР° СЃРёСЃС‚РµРјС‹ С‚Р°РєС‚РёСЂРѕРІР°РЅРёСЏ СЏРґСЂР° STM8S
   \author  JavaLandau
   \version 1.0
   \date    20.12.2017 
@@ -11,7 +11,7 @@
 #include "stm8s_clk.h"
 #include "BitsMaskOperations.h"
 
-/** @name Регистры CLK
+/** @name Р РµРіРёСЃС‚СЂС‹ CLK
 */                        
 ///@{
 #define CLK_ICKR     (((volatile char*)(0x0050C0)))
@@ -29,7 +29,7 @@
 #define CLK_SWIMCCR  (((volatile char*)(0x0050CD)))
 ///@}
 
-/** @name Значения битов регистров CLK
+/** @name Р—РЅР°С‡РµРЅРёСЏ Р±РёС‚РѕРІ СЂРµРіРёСЃС‚СЂРѕРІ CLK
 */                        
 ///@{
 #define HSIEN         0
@@ -52,18 +52,18 @@
 #define HSE_SELECT    0xB4
 ///@}
 
-/*Назначение HSE источником тактирования ядра*/
+/*РќР°Р·РЅР°С‡РµРЅРёРµ HSE РёСЃС‚РѕС‡РЅРёРєРѕРј С‚Р°РєС‚РёСЂРѕРІР°РЅРёСЏ СЏРґСЂР°*/
 uint32_t stm8s_clk_SetHSEMasterClock(void)
 {
   uint32_t Res;
   
-  /*Установка HSE источником тактирования*/
+  /*РЈСЃС‚Р°РЅРѕРІРєР° HSE РёСЃС‚РѕС‡РЅРёРєРѕРј С‚Р°РєС‚РёСЂРѕРІР°РЅРёСЏ*/
   CHANGE_REG(CLK_SWR,HSE_SELECT);
 
   if(GET_REG(CLK_SWR) != HSE_SELECT) 
     return FUNC_ERROR;
     
-  /*Ожидание стабилизации генератора*/  
+  /*РћР¶РёРґР°РЅРёРµ СЃС‚Р°Р±РёР»РёР·Р°С†РёРё РіРµРЅРµСЂР°С‚РѕСЂР°*/  
   while(!GET_REG_BIT(CLK_SWCR,SWIF))
     _asm("NOP");	
   
@@ -72,25 +72,25 @@ uint32_t stm8s_clk_SetHSEMasterClock(void)
   if(GET_REG_BIT(CLK_SWCR,SWIF) != RESET) 
     return FUNC_ERROR;
 
-  /*Открыть доступ к записи option bytes*/
+  /*РћС‚РєСЂС‹С‚СЊ РґРѕСЃС‚СѓРї Рє Р·Р°РїРёСЃРё option bytes*/
   Res = stm8s_flash_OptionBytesEnable();
   
   if(Res != FUNC_OK)
     return Res;
   
-  /*Изменение настроек доступа к флеш-памяти в случае Fclk > 16 MHz*/
+  /*РР·РјРµРЅРµРЅРёРµ РЅР°СЃС‚СЂРѕРµРє РґРѕСЃС‚СѓРїР° Рє С„Р»РµС€-РїР°РјСЏС‚Рё РІ СЃР»СѓС‡Р°Рµ Fclk > 16 MHz*/
   Res = stm8s_optionbytes_SetFlashWait(OPT7_WAIT_1);
 	
   if(Res != FUNC_OK)
     return Res;          
   
-  /*Закрыть доступ к записи option bytes*/
+  /*Р—Р°РєСЂС‹С‚СЊ РґРѕСЃС‚СѓРї Рє Р·Р°РїРёСЃРё option bytes*/
   Res = stm8s_flash_OptionBytesDisable();
   
   if(Res != FUNC_OK)
     return Res;          
          
-  /*Переключить систему тактирования STM8S на HSE*/
+  /*РџРµСЂРµРєР»СЋС‡РёС‚СЊ СЃРёСЃС‚РµРјСѓ С‚Р°РєС‚РёСЂРѕРІР°РЅРёСЏ STM8S РЅР° HSE*/
   SET_REG_BIT(CLK_SWCR,SWEN);	
 			
   return FUNC_OK;

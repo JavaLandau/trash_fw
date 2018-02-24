@@ -1,6 +1,6 @@
 /**
   \file    GPIOfun.h 
-  \brief   Заголовочный файл функций для работы с GPIO
+  \brief   Р—Р°РіРѕР»РѕРІРѕС‡РЅС‹Р№ С„Р°Р№Р» С„СѓРЅРєС†РёР№ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ GPIO
   \author  JavaLandau
   \version 1.0
   \date    20.12.2017 
@@ -9,11 +9,11 @@
 #ifndef _GPIOFUN_
 #define _GPIOFUN_
 
-/**Получение номера GPIO по строковому описанию
-  \param[in] StrGPIOPin строковое описание номера GPIO
-  \param[out] ppGPIOPort указатель на порт GPIO
-  \param[out] pGPIONum номер GPIO
-  \return Результат выполнения функции 
+/**РџРѕР»СѓС‡РµРЅРёРµ РЅРѕРјРµСЂР° GPIO РїРѕ СЃС‚СЂРѕРєРѕРІРѕРјСѓ РѕРїРёСЃР°РЅРёСЋ
+  \param[in] StrGPIOPin СЃС‚СЂРѕРєРѕРІРѕРµ РѕРїРёСЃР°РЅРёРµ РЅРѕРјРµСЂР° GPIO
+  \param[out] ppGPIOPort СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РїРѕСЂС‚ GPIO
+  \param[out] pGPIONum РЅРѕРјРµСЂ GPIO
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */
 uint32_t GPIOGetPort(const char* StrGPIOPin, GPIO_TypeDef** ppGPIOPort, uint16_t* pGPIONum);
 

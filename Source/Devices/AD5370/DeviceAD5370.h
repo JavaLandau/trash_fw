@@ -1,6 +1,6 @@
 /**
   \file    DeviceAD5370.h 
-  \brief   Заголовочный файл драйвера ЦАП AD5370
+  \brief   Р—Р°РіРѕР»РѕРІРѕС‡РЅС‹Р№ С„Р°Р№Р» РґСЂР°Р№РІРµСЂР° Р¦РђРџ AD5370
   \author  JavaLandau
   \version 1.0
   \date    20.12.2017 
@@ -17,90 +17,90 @@
 @{
 */
 
-#define NUM_CHANNELS            40              ///<Общее количество каналов
+#define NUM_CHANNELS            40              ///<РћР±С‰РµРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РєР°РЅР°Р»РѕРІ
 
-#define SELECT_A                0x0             ///<Выбор регистра X2A для каналов ЦАП
-#define SELECT_B                0x4             ///<Выбор регистра X2B для каналов ЦАП
+#define SELECT_A                0x0             ///<Р’С‹Р±РѕСЂ СЂРµРіРёСЃС‚СЂР° X2A РґР»СЏ РєР°РЅР°Р»РѕРІ Р¦РђРџ
+#define SELECT_B                0x4             ///<Р’С‹Р±РѕСЂ СЂРµРіРёСЃС‚СЂР° X2B РґР»СЏ РєР°РЅР°Р»РѕРІ Р¦РђРџ
 
-#define TEMP_SHUTDOWN_ENABLE    0x2             ///<Разрешить отключение устройства при перегреве
-#define TEMP_SHUTDOWN_DISABLE   0x0             ///<Запретить отключение устройства при перегреве
+#define TEMP_SHUTDOWN_ENABLE    0x2             ///<Р Р°Р·СЂРµС€РёС‚СЊ РѕС‚РєР»СЋС‡РµРЅРёРµ СѓСЃС‚СЂРѕР№СЃС‚РІР° РїСЂРё РїРµСЂРµРіСЂРµРІРµ
+#define TEMP_SHUTDOWN_DISABLE   0x0             ///<Р—Р°РїСЂРµС‚РёС‚СЊ РѕС‚РєР»СЋС‡РµРЅРёРµ СѓСЃС‚СЂРѕР№СЃС‚РІР° РїСЂРё РїРµСЂРµРіСЂРµРІРµ
 
-#define SOFT_POWER_DOWN         0x1             ///<ЦАП отключен
-#define SOFT_POWER_UP           0x0             ///<ЦАП включен
+#define SOFT_POWER_DOWN         0x1             ///<Р¦РђРџ РѕС‚РєР»СЋС‡РµРЅ
+#define SOFT_POWER_UP           0x0             ///<Р¦РђРџ РІРєР»СЋС‡РµРЅ
 
-///Опорное напряжение для ЦАП
+///РћРїРѕСЂРЅРѕРµ РЅР°РїСЂСЏР¶РµРЅРёРµ РґР»СЏ Р¦РђРџ
 typedef enum _DeviceAD5370Vref {
-  VREF_3V = 0x0,                                ///<Опорное напряжение 3 В
-  VREF_5V                                       ///<Опорное напряжение 5 В
+  VREF_3V = 0x0,                                ///<РћРїРѕСЂРЅРѕРµ РЅР°РїСЂСЏР¶РµРЅРёРµ 3 Р’
+  VREF_5V                                       ///<РћРїРѕСЂРЅРѕРµ РЅР°РїСЂСЏР¶РµРЅРёРµ 5 Р’
 } DeviceAD5370Vref;
 
-///Структура драйвера ЦАП
+///РЎС‚СЂСѓРєС‚СѓСЂР° РґСЂР°Р№РІРµСЂР° Р¦РђРџ
 typedef struct _DeviceAD5370 {
-  SPI_HandleTypeDef SPIDrv;                    ///<Указатель на структуру драйвера SPI
+  SPI_HandleTypeDef SPIDrv;                    ///<РЈРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР° SPI
   
-  GPIO_TypeDef*     pGPIOSyncPort;             ///<Указатель на структуру GPIO для сигнала \f$\overline{SYNC}\f$ 
-  GPIO_TypeDef*     pGPIOResetPort;            ///<Указатель на структуру GPIO для сигнала \f$\overline{RESET}\f$  
-  GPIO_TypeDef*     pGPIOBusyPort;             ///<Указатель на структуру GPIO для сигнала \f$\overline{BUSY}\f$ 
-  GPIO_TypeDef*     pGPIOLDACPort;             ///<Указатель на структуру GPIO для сигнала \f$\overline{LDAC}\f$  
-  GPIO_TypeDef*     pGPIOCLRPort;              ///<Указатель на структуру GPIO для сигнала \f$\overline{CLR}\f$    
+  GPIO_TypeDef*     pGPIOSyncPort;             ///<РЈРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ GPIO РґР»СЏ СЃРёРіРЅР°Р»Р° \f$\overline{SYNC}\f$ 
+  GPIO_TypeDef*     pGPIOResetPort;            ///<РЈРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ GPIO РґР»СЏ СЃРёРіРЅР°Р»Р° \f$\overline{RESET}\f$  
+  GPIO_TypeDef*     pGPIOBusyPort;             ///<РЈРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ GPIO РґР»СЏ СЃРёРіРЅР°Р»Р° \f$\overline{BUSY}\f$ 
+  GPIO_TypeDef*     pGPIOLDACPort;             ///<РЈРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ GPIO РґР»СЏ СЃРёРіРЅР°Р»Р° \f$\overline{LDAC}\f$  
+  GPIO_TypeDef*     pGPIOCLRPort;              ///<РЈРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ GPIO РґР»СЏ СЃРёРіРЅР°Р»Р° \f$\overline{CLR}\f$    
   
-  uint16_t          GPIOSyncNum;               ///<Номер GPIO для сигнала \f$\overline{SYNC}\f$  
-  uint16_t          GPIOResetNum;              ///<Номер GPIO для сигнала \f$\overline{RESET}\f$   
-  uint16_t          GPIOBusyNum;               ///<Номер GPIO для сигнала \f$\overline{BUSY}\f$   
-  uint16_t          GPIOLDACNum;               ///<Номер GPIO для сигнала \f$\overline{LDAC}\f$   
-  uint16_t          GPIOCLRNum;                ///<Номер GPIO для сигнала \f$\overline{CLR}\f$   
+  uint16_t          GPIOSyncNum;               ///<РќРѕРјРµСЂ GPIO РґР»СЏ СЃРёРіРЅР°Р»Р° \f$\overline{SYNC}\f$  
+  uint16_t          GPIOResetNum;              ///<РќРѕРјРµСЂ GPIO РґР»СЏ СЃРёРіРЅР°Р»Р° \f$\overline{RESET}\f$   
+  uint16_t          GPIOBusyNum;               ///<РќРѕРјРµСЂ GPIO РґР»СЏ СЃРёРіРЅР°Р»Р° \f$\overline{BUSY}\f$   
+  uint16_t          GPIOLDACNum;               ///<РќРѕРјРµСЂ GPIO РґР»СЏ СЃРёРіРЅР°Р»Р° \f$\overline{LDAC}\f$   
+  uint16_t          GPIOCLRNum;                ///<РќРѕРјРµСЂ GPIO РґР»СЏ СЃРёРіРЅР°Р»Р° \f$\overline{CLR}\f$   
 } DeviceAD5370;
 
-///Структура параметров инициализации драйвера ЦАП
+///РЎС‚СЂСѓРєС‚СѓСЂР° РїР°СЂР°РјРµС‚СЂРѕРІ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РґСЂР°Р№РІРµСЂР° Р¦РђРџ
 typedef struct _DeviceAD5370Param {
-  DeviceAD5370Vref  Vref;                      ///<Опорное напряжение ЦАП 
-  SPI_TypeDef*      pInstanceSPIDrv;           ///<Указатель на параметры драйвера SPI          
-  uint32_t          BaudRateSPIPrescaler;      ///<Скорость работы SPI 
+  DeviceAD5370Vref  Vref;                      ///<РћРїРѕСЂРЅРѕРµ РЅР°РїСЂСЏР¶РµРЅРёРµ Р¦РђРџ 
+  SPI_TypeDef*      pInstanceSPIDrv;           ///<РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РїР°СЂР°РјРµС‚СЂС‹ РґСЂР°Р№РІРµСЂР° SPI          
+  uint32_t          BaudRateSPIPrescaler;      ///<РЎРєРѕСЂРѕСЃС‚СЊ СЂР°Р±РѕС‚С‹ SPI 
   
-  char*             GPIOSyncPin;               ///<Строка описания номера пина микроконтроллера для сигнала \f$\overline{SYNC}\f$  
-  char*             GPIOResetPin;              ///<Строка описания номера пина микроконтроллера для сигнала \f$\overline{RESET}\f$   
-  char*             GPIOBusyPin;               ///<Строка описания номера пина микроконтроллера для сигнала \f$\overline{BUSY}\f$   
-  char*             GPIOLDACPin;               ///<Строка описания номера пина микроконтроллера для сигнала \f$\overline{LDAC}\f$   
-  char*             GPIOCLRPin;                ///<Строка описания номера пина микроконтроллера для сигнала \f$\overline{CLR}\f$   
+  char*             GPIOSyncPin;               ///<РЎС‚СЂРѕРєР° РѕРїРёСЃР°РЅРёСЏ РЅРѕРјРµСЂР° РїРёРЅР° РјРёРєСЂРѕРєРѕРЅС‚СЂРѕР»Р»РµСЂР° РґР»СЏ СЃРёРіРЅР°Р»Р° \f$\overline{SYNC}\f$  
+  char*             GPIOResetPin;              ///<РЎС‚СЂРѕРєР° РѕРїРёСЃР°РЅРёСЏ РЅРѕРјРµСЂР° РїРёРЅР° РјРёРєСЂРѕРєРѕРЅС‚СЂРѕР»Р»РµСЂР° РґР»СЏ СЃРёРіРЅР°Р»Р° \f$\overline{RESET}\f$   
+  char*             GPIOBusyPin;               ///<РЎС‚СЂРѕРєР° РѕРїРёСЃР°РЅРёСЏ РЅРѕРјРµСЂР° РїРёРЅР° РјРёРєСЂРѕРєРѕРЅС‚СЂРѕР»Р»РµСЂР° РґР»СЏ СЃРёРіРЅР°Р»Р° \f$\overline{BUSY}\f$   
+  char*             GPIOLDACPin;               ///<РЎС‚СЂРѕРєР° РѕРїРёСЃР°РЅРёСЏ РЅРѕРјРµСЂР° РїРёРЅР° РјРёРєСЂРѕРєРѕРЅС‚СЂРѕР»Р»РµСЂР° РґР»СЏ СЃРёРіРЅР°Р»Р° \f$\overline{LDAC}\f$   
+  char*             GPIOCLRPin;                ///<РЎС‚СЂРѕРєР° РѕРїРёСЃР°РЅРёСЏ РЅРѕРјРµСЂР° РїРёРЅР° РјРёРєСЂРѕРєРѕРЅС‚СЂРѕР»Р»РµСЂР° РґР»СЏ СЃРёРіРЅР°Р»Р° \f$\overline{CLR}\f$   
 } DeviceAD5370Param;
 
-///Специальные коды ошибок
+///РЎРїРµС†РёР°Р»СЊРЅС‹Рµ РєРѕРґС‹ РѕС€РёР±РѕРє
 typedef enum _ExtCodeDeviceAD5370 {
-  DEVICE_AD5370_NOT_CODE = 0,                   ///<Ошибок нет
-  DEVICE_AD5370_ERROR_INIT_SPI,                 ///<Ошибка инициализации SPI
-  DEVICE_AD5370_ERROR_INIT_GPIO,                ///<Ошибка инициализации GPIO
-  DEVICE_AD5370_ERROR_PROCESS_SPI,              ///<Ошибка в процессе работы с SPI
-  DEVICE_AD5370_ERROR_WRITE_SPI                 ///<Ошибка записи данных в ЦАП по SPI
+  DEVICE_AD5370_NOT_CODE = 0,                   ///<РћС€РёР±РѕРє РЅРµС‚
+  DEVICE_AD5370_ERROR_INIT_SPI,                 ///<РћС€РёР±РєР° РёРЅРёС†РёР°Р»РёР·Р°С†РёРё SPI
+  DEVICE_AD5370_ERROR_INIT_GPIO,                ///<РћС€РёР±РєР° РёРЅРёС†РёР°Р»РёР·Р°С†РёРё GPIO
+  DEVICE_AD5370_ERROR_PROCESS_SPI,              ///<РћС€РёР±РєР° РІ РїСЂРѕС†РµСЃСЃРµ СЂР°Р±РѕС‚С‹ СЃ SPI
+  DEVICE_AD5370_ERROR_WRITE_SPI                 ///<РћС€РёР±РєР° Р·Р°РїРёСЃРё РґР°РЅРЅС‹С… РІ Р¦РђРџ РїРѕ SPI
 } ExtCodeDeviceAD5370;
 
-/**Инициализация драйвера ЦАП
-  \param[in] pDevParam указатель на структуру параметров для инициализации драйвера
-  \param[in] pDev указатель на структуру драйвера
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РґСЂР°Р№РІРµСЂР° Р¦РђРџ
+  \param[in] pDevParam СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РїР°СЂР°РјРµС‚СЂРѕРІ РґР»СЏ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РґСЂР°Р№РІРµСЂР°
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */ 
 uint32_t DeviceAD5370Create(DeviceAD5370Param* pDevParam, DeviceAD5370* pDev, ExtCodeDeviceAD5370* pExCode);
 
-/**Установка всех каналов ЦАП
-  \param[in] pDev указатель на структуру драйвера
-  \param[in] pOutput значения для всех каналов ЦАП
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**РЈСЃС‚Р°РЅРѕРІРєР° РІСЃРµС… РєР°РЅР°Р»РѕРІ Р¦РђРџ
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[in] pOutput Р·РЅР°С‡РµРЅРёСЏ РґР»СЏ РІСЃРµС… РєР°РЅР°Р»РѕРІ Р¦РђРџ
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */ 
 uint32_t DeviceAD5370SetAllChannels(DeviceAD5370* pDev, uint16_t* pOutput, ExtCodeDeviceAD5370* pExCode);
 
-/**Перезагрузка ЦАП
-  \param[in] pDev указатель на структуру драйвера
-  \return Результат выполнения функции 
+/**РџРµСЂРµР·Р°РіСЂСѓР·РєР° Р¦РђРџ
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */
 uint32_t DeviceAD5370Reset(DeviceAD5370* pDev);
 
-/**Установка заданного канала ЦАП
-  \param[in] pDev указатель на структуру драйвера
-  \param[in] ValueChannel значение канала
-  \param[in] NumChannel номер канала
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**РЈСЃС‚Р°РЅРѕРІРєР° Р·Р°РґР°РЅРЅРѕРіРѕ РєР°РЅР°Р»Р° Р¦РђРџ
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[in] ValueChannel Р·РЅР°С‡РµРЅРёРµ РєР°РЅР°Р»Р°
+  \param[in] NumChannel РЅРѕРјРµСЂ РєР°РЅР°Р»Р°
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */
 uint32_t DeviceAD5370SetOneChannel(DeviceAD5370* pDev, uint16_t ValueChannel, uint8_t NumChannel, ExtCodeDeviceAD5370* pExCode);
 

@@ -1,6 +1,6 @@
 /**
   \file    DeviceEMS22A.c 
-  \brief   Исполняемый файл драйвера абсолютного энкодера EMS22A
+  \brief   РСЃРїРѕР»РЅСЏРµРјС‹Р№ С„Р°Р№Р» РґСЂР°Р№РІРµСЂР° Р°Р±СЃРѕР»СЋС‚РЅРѕРіРѕ СЌРЅРєРѕРґРµСЂР° EMS22A
   \author  JavaLandau
   \version 1.0
   \date    20.12.2017 
@@ -9,28 +9,28 @@
 #include "DeviceEMS22A.h"
 
 /**
-  \defgroup module_service_EMS22A Служебные функции для работы с EMS22A
-  \brief Модуль служебных функций, необходимых для работы с абсолютным энкодером EMS22A
+  \defgroup module_service_EMS22A РЎР»СѓР¶РµР±РЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ EMS22A
+  \brief РњРѕРґСѓР»СЊ СЃР»СѓР¶РµР±РЅС‹С… С„СѓРЅРєС†РёР№, РЅРµРѕР±С…РѕРґРёРјС‹С… РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ Р°Р±СЃРѕР»СЋС‚РЅС‹Рј СЌРЅРєРѕРґРµСЂРѕРј EMS22A
 @{
 */
 
-///Время ожидания окончания приёма/передачи данных по SPI
+///Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РѕРєРѕРЅС‡Р°РЅРёСЏ РїСЂРёС‘РјР°/РїРµСЂРµРґР°С‡Рё РґР°РЅРЅС‹С… РїРѕ SPI
 #define EMS22A_TIME_WAIT_SPI            1000                    
 
-///Максимально возможный возращаемый энкодером код угла
+///РњР°РєСЃРёРјР°Р»СЊРЅРѕ РІРѕР·РјРѕР¶РЅС‹Р№ РІРѕР·СЂР°С‰Р°РµРјС‹Р№ СЌРЅРєРѕРґРµСЂРѕРј РєРѕРґ СѓРіР»Р°
 #define EMS22A_FULL_RANGE_CODE          0x400                   
 
-///Количество градусов в полном круге
+///РљРѕР»РёС‡РµСЃС‚РІРѕ РіСЂР°РґСѓСЃРѕРІ РІ РїРѕР»РЅРѕРј РєСЂСѓРіРµ
 #define EMS22A_FULL_ROTATE_DEG          360
 
-#define GET_BIT(VALUE,NUM)              (((VALUE)>>(NUM))&0x1)  ///<Значение заданного бита
-#define ANGULAR_BITS(VALUE)             (((VALUE)>>0x6)&0x3FF)  ///<Значение угла
-#define STATUS_BITS(VALUE)              (((VALUE)>>0x1)&0x1F)   ///<Значение бита статусу
-#define PARITY_BIT(VALUE)               ((VALUE)&0x1)           ///<Значение бита контрольной суммы
+#define GET_BIT(VALUE,NUM)              (((VALUE)>>(NUM))&0x1)  ///<Р—РЅР°С‡РµРЅРёРµ Р·Р°РґР°РЅРЅРѕРіРѕ Р±РёС‚Р°
+#define ANGULAR_BITS(VALUE)             (((VALUE)>>0x6)&0x3FF)  ///<Р—РЅР°С‡РµРЅРёРµ СѓРіР»Р°
+#define STATUS_BITS(VALUE)              (((VALUE)>>0x1)&0x1F)   ///<Р—РЅР°С‡РµРЅРёРµ Р±РёС‚Р° СЃС‚Р°С‚СѓСЃСѓ
+#define PARITY_BIT(VALUE)               ((VALUE)&0x1)           ///<Р—РЅР°С‡РµРЅРёРµ Р±РёС‚Р° РєРѕРЅС‚СЂРѕР»СЊРЅРѕР№ СЃСѓРјРјС‹
 
-/**Проверка контрольной суммы данных с энкодера
-  \param[in] Value данные с датчика
-  \return Результат сравнения контрольных сумм (1 - совпадают, 0 - не совпадают)
+/**РџСЂРѕРІРµСЂРєР° РєРѕРЅС‚СЂРѕР»СЊРЅРѕР№ СЃСѓРјРјС‹ РґР°РЅРЅС‹С… СЃ СЌРЅРєРѕРґРµСЂР°
+  \param[in] Value РґР°РЅРЅС‹Рµ СЃ РґР°С‚С‡РёРєР°
+  \return Р РµР·СѓР»СЊС‚Р°С‚ СЃСЂР°РІРЅРµРЅРёСЏ РєРѕРЅС‚СЂРѕР»СЊРЅС‹С… СЃСѓРјРј (1 - СЃРѕРІРїР°РґР°СЋС‚, 0 - РЅРµ СЃРѕРІРїР°РґР°СЋС‚)
 */ 
 static uint8_t prvDeviceEMS22AEventParity(uint16_t Value)
 {
@@ -41,13 +41,13 @@ static uint8_t prvDeviceEMS22AEventParity(uint16_t Value)
   return !(ParityValue % 2);
 }
 
-/**Проверка связи с энкодером
-  \param[in] pDev указатель на структуру драйвера
-  \return Результат выполнения функции
+/**РџСЂРѕРІРµСЂРєР° СЃРІСЏР·Рё СЃ СЌРЅРєРѕРґРµСЂРѕРј
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
 */ 
 static uint32_t prvDeviceEMS22ACheck(DeviceEMS22A* pDev)
 {
-  /*Проверка входных данных*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РґР°РЅРЅС‹С…*/
   if(!pDev)
     return FUNC_INVALID_PARAM;  
   
@@ -69,15 +69,15 @@ static uint32_t prvDeviceEMS22ACheck(DeviceEMS22A* pDev)
 
 /**
 @}
-  \defgroup module_EMS22A Интерфейсные функции для работы с EMS22A
-  \brief Модуль, предоставляющий пользователю необходимый функционал для работы с абсолютным энкодером EMS22A
+  \defgroup module_EMS22A РРЅС‚РµСЂС„РµР№СЃРЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ EMS22A
+  \brief РњРѕРґСѓР»СЊ, РїСЂРµРґРѕСЃС‚Р°РІР»СЏСЋС‰РёР№ РїРѕР»СЊР·РѕРІР°С‚РµР»СЋ РЅРµРѕР±С…РѕРґРёРјС‹Р№ С„СѓРЅРєС†РёРѕРЅР°Р» РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ Р°Р±СЃРѕР»СЋС‚РЅС‹Рј СЌРЅРєРѕРґРµСЂРѕРј EMS22A
 @{
 */
 
-/*Инициализация драйвера энкодера*/
+/*РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РґСЂР°Р№РІРµСЂР° СЌРЅРєРѕРґРµСЂР°*/
 uint32_t DeviceEMS22ACreate(DeviceEMS22AParam* pDevParam, DeviceEMS22A* pDev, ExtCodeDeviceEMS22A* pExCode)
 {
-  /*Проверка входных данных*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РґР°РЅРЅС‹С…*/
   if(!pExCode)
     return FUNC_INVALID_PARAM;
     
@@ -86,7 +86,7 @@ uint32_t DeviceEMS22ACreate(DeviceEMS22AParam* pDevParam, DeviceEMS22A* pDev, Ex
   if(!pDevParam || !pDev)
     return FUNC_INVALID_PARAM;
     
-  /*Инициализация SPI*/
+  /*РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ SPI*/
   pDev->SPIDrv.State = HAL_SPI_STATE_RESET;
   pDev->SPIDrv.Instance = pDevParam->pInstanceSPIDrv;
   pDev->SPIDrv.Init.Mode = SPI_MODE_MASTER;
@@ -107,17 +107,17 @@ uint32_t DeviceEMS22ACreate(DeviceEMS22AParam* pDevParam, DeviceEMS22A* pDev, Ex
     return FUNC_ERROR;
   }
 
-  /*Проверка связи с энкодером*/
+  /*РџСЂРѕРІРµСЂРєР° СЃРІСЏР·Рё СЃ СЌРЅРєРѕРґРµСЂРѕРј*/
   if(prvDeviceEMS22ACheck(pDev) != FUNC_OK)
     return FUNC_ERROR;
   
   return FUNC_OK;  
 }
 
-/*Чтение данных с энкодера*/
+/*Р§С‚РµРЅРёРµ РґР°РЅРЅС‹С… СЃ СЌРЅРєРѕРґРµСЂР°*/
 uint32_t DeviceEMS22AGetCode(DeviceEMS22A* pDev, uint16_t* pCode, ExtCodeDeviceEMS22A* pExCode)
 {
-  /*Проверка входных данных*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РґР°РЅРЅС‹С…*/
   if(!pDev || !pCode || !pExCode)
     return FUNC_INVALID_PARAM;
     
@@ -126,7 +126,7 @@ uint32_t DeviceEMS22AGetCode(DeviceEMS22A* pDev, uint16_t* pCode, ExtCodeDeviceE
   HAL_StatusTypeDef HALRes;
   uint16_t ReceiveHalfWord = 0xFFFF;
     
-  /*Чтение данных*/
+  /*Р§С‚РµРЅРёРµ РґР°РЅРЅС‹С…*/
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_RESET);
   HALRes = HAL_SPI_Receive(&pDev->SPIDrv, (uint8_t*)&ReceiveHalfWord, 1, EMS22A_TIME_WAIT_SPI);
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_SET);
@@ -137,7 +137,7 @@ uint32_t DeviceEMS22AGetCode(DeviceEMS22A* pDev, uint16_t* pCode, ExtCodeDeviceE
     return FUNC_ERROR;
   }
 
-  /*Проверка CRC*/
+  /*РџСЂРѕРІРµСЂРєР° CRC*/
   if(!prvDeviceEMS22AEventParity(ReceiveHalfWord))
   {
     *pExCode = DEVICE_EMS22A_ERROR_CRC;
@@ -149,10 +149,10 @@ uint32_t DeviceEMS22AGetCode(DeviceEMS22A* pDev, uint16_t* pCode, ExtCodeDeviceE
   return FUNC_OK;  
 }
 
-/*Чтение значения угла поворота*/
+/*Р§С‚РµРЅРёРµ Р·РЅР°С‡РµРЅРёСЏ СѓРіР»Р° РїРѕРІРѕСЂРѕС‚Р°*/
 uint32_t DeviceEMS22AGetAngular(DeviceEMS22A* pDev, float* pAng, ExtCodeDeviceEMS22A* pExCode)
 {
-  /*Проверка входных данных*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РґР°РЅРЅС‹С…*/
   if(!pDev || !pAng || !pExCode)
     return FUNC_INVALID_PARAM;
     
@@ -161,13 +161,13 @@ uint32_t DeviceEMS22AGetAngular(DeviceEMS22A* pDev, float* pAng, ExtCodeDeviceEM
   uint32_t Res;
   uint16_t EncoderCode;
   
-  /*Чтение данных с энкодера*/
+  /*Р§С‚РµРЅРёРµ РґР°РЅРЅС‹С… СЃ СЌРЅРєРѕРґРµСЂР°*/
   Res = DeviceEMS22AGetCode(pDev, &EncoderCode, pExCode);
   
   if(Res != FUNC_OK)
     return Res;
   
-  /*Вычисление угла поворота*/
+  /*Р’С‹С‡РёСЃР»РµРЅРёРµ СѓРіР»Р° РїРѕРІРѕСЂРѕС‚Р°*/
   *pAng = EMS22A_FULL_ROTATE_DEG*(float)EncoderCode /(float)EMS22A_FULL_RANGE_CODE;
       
   return FUNC_OK;

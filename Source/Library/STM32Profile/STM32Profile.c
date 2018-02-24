@@ -1,22 +1,22 @@
 /**
   \file STM32Profile.c 
-  \brief Исполняемый файл профилировщика STM32
-  \author  Яковлев В. А.
+  \brief РСЃРїРѕР»РЅСЏРµРјС‹Р№ С„Р°Р№Р» РїСЂРѕС„РёР»РёСЂРѕРІС‰РёРєР° STM32
+  \author  РЇРєРѕРІР»РµРІ Р’. Рђ.
   \version 1.0
   \date    25.01.2018 
 */
 
 /**
-  \defgroup module_STM32profile Профилировщик STM32
+  \defgroup module_STM32profile РџСЂРѕС„РёР»РёСЂРѕРІС‰РёРє STM32
    
-  \brief Модуль средств профилирования STM32. Это прототип 
-         профилировщика для STM32, использующий по-умолчанию таймер TIM1
+  \brief РњРѕРґСѓР»СЊ СЃСЂРµРґСЃС‚РІ РїСЂРѕС„РёР»РёСЂРѕРІР°РЅРёСЏ STM32. Р­С‚Рѕ РїСЂРѕС‚РѕС‚РёРї 
+         РїСЂРѕС„РёР»РёСЂРѕРІС‰РёРєР° РґР»СЏ STM32, РёСЃРїРѕР»СЊР·СѓСЋС‰РёР№ РїРѕ-СѓРјРѕР»С‡Р°РЅРёСЋ С‚Р°Р№РјРµСЂ TIM1
 
   \todo 
-           - сделать аппаратно-независимым;
-           - добавить возможность вносить калибровочное значение, 
-             вычисленное по осциллографу;
-           - добавить функции отсчета времени.
+           - СЃРґРµР»Р°С‚СЊ Р°РїРїР°СЂР°С‚РЅРѕ-РЅРµР·Р°РІРёСЃРёРјС‹Рј;
+           - РґРѕР±Р°РІРёС‚СЊ РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РІРЅРѕСЃРёС‚СЊ РєР°Р»РёР±СЂРѕРІРѕС‡РЅРѕРµ Р·РЅР°С‡РµРЅРёРµ, 
+             РІС‹С‡РёСЃР»РµРЅРЅРѕРµ РїРѕ РѕСЃС†РёР»Р»РѕРіСЂР°С„Сѓ;
+           - РґРѕР±Р°РІРёС‚СЊ С„СѓРЅРєС†РёРё РѕС‚СЃС‡РµС‚Р° РІСЂРµРјРµРЅРё.
   @{
 */
 
@@ -24,23 +24,23 @@
 #include "stm32l4xx_hal.h"
 #include "STM32Profile.h"
 
-#define SCALE_NANO      1000000000.0    ///<Масштаб наносекунды
-#define SCALE_MICRO     1000000.0       ///<Масштаб микросекунды
-#define SCALE_MIL       1000.0          ///<Масштаб миллисекунды
+#define SCALE_NANO      1000000000.0    ///<РњР°СЃС€С‚Р°Р± РЅР°РЅРѕСЃРµРєСѓРЅРґС‹
+#define SCALE_MICRO     1000000.0       ///<РњР°СЃС€С‚Р°Р± РјРёРєСЂРѕСЃРµРєСѓРЅРґС‹
+#define SCALE_MIL       1000.0          ///<РњР°СЃС€С‚Р°Р± РјРёР»Р»РёСЃРµРєСѓРЅРґС‹
 
-#define SIZE_SELECTION  50              ///<Величина выборки
+#define SIZE_SELECTION  50              ///<Р’РµР»РёС‡РёРЅР° РІС‹Р±РѕСЂРєРё
 
-static STM32ProfileStruct ProfileObj;   ///<Объект профиля   
+static STM32ProfileStruct ProfileObj;   ///<РћР±СЉРµРєС‚ РїСЂРѕС„РёР»СЏ   
 
-/** Запуск подсчета времени для калибровки задежрки, вносимой обработкой
-    прерывания
+/** Р—Р°РїСѓСЃРє РїРѕРґСЃС‡РµС‚Р° РІСЂРµРјРµРЅРё РґР»СЏ РєР°Р»РёР±СЂРѕРІРєРё Р·Р°РґРµР¶СЂРєРё, РІРЅРѕСЃРёРјРѕР№ РѕР±СЂР°Р±РѕС‚РєРѕР№
+    РїСЂРµСЂС‹РІР°РЅРёСЏ
 */
 static void prvSTM32ProfileCalibrInterruptStart(void);
 
-/*Инициализация профиля*/
+/*РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїСЂРѕС„РёР»СЏ*/
 uint32_t STM32ProfileInit(uint32_t FreqMCU, uint32_t Prescaler, uint32_t Period, STM32TimeScale TimeScale, STM32ProfileErrorCode* pErrorCode)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pErrorCode)
     return FUNC_INVALID_PARAM;
   
@@ -49,7 +49,7 @@ uint32_t STM32ProfileInit(uint32_t FreqMCU, uint32_t Prescaler, uint32_t Period,
   if(!Period || !FreqMCU)
     return FUNC_INVALID_PARAM;
   
-  /*Заполнение структуры профиля*/  
+  /*Р—Р°РїРѕР»РЅРµРЅРёРµ СЃС‚СЂСѓРєС‚СѓСЂС‹ РїСЂРѕС„РёР»СЏ*/  
   ProfileObj.TimerCycles = 0;
   ProfileObj.Period = Period;
   ProfileObj.TimerFreq = FreqMCU/(Prescaler + 1);
@@ -64,7 +64,7 @@ uint32_t STM32ProfileInit(uint32_t FreqMCU, uint32_t Prescaler, uint32_t Period,
   ProfileObj.htim.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   ProfileObj.htim.Init.RepetitionCounter = 0;
   
-  /*Инициализация таймера*/
+  /*РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ С‚Р°Р№РјРµСЂР°*/
   if (HAL_TIM_Base_Init(&ProfileObj.htim) != HAL_OK)
   {
     *pErrorCode = STM32_PROFILE_ERROR_TIM1;
@@ -92,7 +92,7 @@ uint32_t STM32ProfileInit(uint32_t FreqMCU, uint32_t Prescaler, uint32_t Period,
      
   __HAL_TIM_CLEAR_IT(&ProfileObj.htim, TIM_IT_UPDATE);
   
-  /*Калибровка профиля для учета всех задержек*/  
+  /*РљР°Р»РёР±СЂРѕРІРєР° РїСЂРѕС„РёР»СЏ РґР»СЏ СѓС‡РµС‚Р° РІСЃРµС… Р·Р°РґРµСЂР¶РµРє*/  
   ProfileObj.SelfDelay = 0;
   ProfileObj.SelfIntDelay = 0;
   ProfileObj.TimeScale = TIME_IN_CYCLES;
@@ -121,8 +121,8 @@ uint32_t STM32ProfileInit(uint32_t FreqMCU, uint32_t Prescaler, uint32_t Period,
   return FUNC_OK;
 }
 
-/*Запуск подсчета времени для калибровки задержки, вносимой обработкой
-   прерывания*/
+/*Р—Р°РїСѓСЃРє РїРѕРґСЃС‡РµС‚Р° РІСЂРµРјРµРЅРё РґР»СЏ РєР°Р»РёР±СЂРѕРІРєРё Р·Р°РґРµСЂР¶РєРё, РІРЅРѕСЃРёРјРѕР№ РѕР±СЂР°Р±РѕС‚РєРѕР№
+   РїСЂРµСЂС‹РІР°РЅРёСЏ*/
 static void prvSTM32ProfileCalibrInterruptStart(void)
 { 
   ProfileObj.TimerCycles = 0;
@@ -130,7 +130,7 @@ static void prvSTM32ProfileCalibrInterruptStart(void)
   HAL_TIM_Base_Start_IT(&ProfileObj.htim);  
 }
 
-/*Запуск подсчета времени*/
+/*Р—Р°РїСѓСЃРє РїРѕРґСЃС‡РµС‚Р° РІСЂРµРјРµРЅРё*/
 void STM32ProfileStart(void)
 {
   ProfileObj.TimerCycles = 0;
@@ -138,7 +138,7 @@ void STM32ProfileStart(void)
   HAL_TIM_Base_Start_IT(&ProfileObj.htim);  
 }
 
-/*Завершение процесса подсчета времени*/
+/*Р—Р°РІРµСЂС€РµРЅРёРµ РїСЂРѕС†РµСЃСЃР° РїРѕРґСЃС‡РµС‚Р° РІСЂРµРјРµРЅРё*/
 uint32_t STM32ProfileStop(void)
 { 
   uint32_t CurCount;  
@@ -170,7 +170,7 @@ uint32_t STM32ProfileStop(void)
   }
 }
 
-/**Обработчик прерываний от таймера TIM1*/
+/**РћР±СЂР°Р±РѕС‚С‡РёРє РїСЂРµСЂС‹РІР°РЅРёР№ РѕС‚ С‚Р°Р№РјРµСЂР° TIM1*/
 void TIM1_UP_TIM16_IRQHandler(void)
 {
   __HAL_TIM_CLEAR_IT(&ProfileObj.htim, TIM_IT_UPDATE);

@@ -1,6 +1,6 @@
 /**
   \file    DeviceMBI5039.c 
-  \brief   Исполняемый файл драйвера светодиодов MBI5039
+  \brief   РСЃРїРѕР»РЅСЏРµРјС‹Р№ С„Р°Р№Р» РґСЂР°Р№РІРµСЂР° СЃРІРµС‚РѕРґРёРѕРґРѕРІ MBI5039
   \author  JavaLandau
   \version 1.0
   \date    20.12.2017 
@@ -10,25 +10,25 @@
 #include "GPIOfun.h"
 
 /**
-  \defgroup module_MBI5039 Интерфейсные функции для работы с MBI5039
-  \brief Модуль, предоставляющий пользователю необходимый функционал для работы с драйвером светодиодов MBI5039
+  \defgroup module_MBI5039 РРЅС‚РµСЂС„РµР№СЃРЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ MBI5039
+  \brief РњРѕРґСѓР»СЊ, РїСЂРµРґРѕСЃС‚Р°РІР»СЏСЋС‰РёР№ РїРѕР»СЊР·РѕРІР°С‚РµР»СЋ РЅРµРѕР±С…РѕРґРёРјС‹Р№ С„СѓРЅРєС†РёРѕРЅР°Р» РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РґСЂР°Р№РІРµСЂРѕРј СЃРІРµС‚РѕРґРёРѕРґРѕРІ MBI5039
 @{
 */
 
-///Время ожидания окончания приёма/передачи данных по SPI
+///Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РѕРєРѕРЅС‡Р°РЅРёСЏ РїСЂРёС‘РјР°/РїРµСЂРµРґР°С‡Рё РґР°РЅРЅС‹С… РїРѕ SPI
 #define OS_TIME_WAIT_SPI        100
 
-///Длина импульса сигнала NSS для защелкивания данных
+///Р”Р»РёРЅР° РёРјРїСѓР»СЊСЃР° СЃРёРіРЅР°Р»Р° NSS РґР»СЏ Р·Р°С‰РµР»РєРёРІР°РЅРёСЏ РґР°РЅРЅС‹С…
 #define NSS_PULSE_WIDTH         5
 
-///Формирование импульса сигнала NSS для защелкивания данных
+///Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ РёРјРїСѓР»СЊСЃР° СЃРёРіРЅР°Р»Р° NSS РґР»СЏ Р·Р°С‰РµР»РєРёРІР°РЅРёСЏ РґР°РЅРЅС‹С…
 #define NSS_PULSE() for(uint32_t SPIIncrement = 0; SPIIncrement < NSS_PULSE_WIDTH; SPIIncrement++) asm("NOP");
 
 
-/*Инициализация драйвера светодиодов*/ 
+/*РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РґСЂР°Р№РІРµСЂР° СЃРІРµС‚РѕРґРёРѕРґРѕРІ*/ 
 uint32_t DeviceMBI5039Create(DeviceMBI5039Param* pDevParam, DeviceMBI5039* pDev, ExtCodeDeviceMBI5039* pExCode)
 {  
-  /*Проверка входных данных*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РґР°РЅРЅС‹С…*/
   if(!pDevParam || !pDev || !pExCode)
     return FUNC_INVALID_PARAM;
   
@@ -40,7 +40,7 @@ uint32_t DeviceMBI5039Create(DeviceMBI5039Param* pDevParam, DeviceMBI5039* pDev,
   if(!pDevParam->devNum)
     return FUNC_INVALID_PARAM;    
   
-  /*Инициализация SPI*/
+  /*РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ SPI*/
   pDev->SPIDrv.State = HAL_SPI_STATE_RESET;
   pDev->SPIDrv.Instance = pDevParam->pInstanceSPIDrv;
   pDev->SPIDrv.Init.Mode = SPI_MODE_MASTER;
@@ -62,7 +62,7 @@ uint32_t DeviceMBI5039Create(DeviceMBI5039Param* pDevParam, DeviceMBI5039* pDev,
     return FUNC_ERROR;
   }
    
-  /*Инициализация NSS*/
+  /*РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ NSS*/
   uint32_t Res;
   GPIO_InitTypeDef GPIO_InitStruct;
   pDev->pGPIONSSPort = 0;
@@ -87,10 +87,10 @@ uint32_t DeviceMBI5039Create(DeviceMBI5039Param* pDevParam, DeviceMBI5039* pDev,
   return FUNC_OK;  
 }
 
-/*Установка выходов драйвера*/
+/*РЈСЃС‚Р°РЅРѕРІРєР° РІС‹С…РѕРґРѕРІ РґСЂР°Р№РІРµСЂР°*/
 uint32_t DeviceMBI5039Set(DeviceMBI5039* pDev, uint16_t* pOutput, ExtCodeDeviceMBI5039* pExCode)
 {
-  /*Проверка входных данных*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РґР°РЅРЅС‹С…*/
   if(!pDev || !pExCode || !pOutput)
     return FUNC_INVALID_PARAM;  
     
@@ -115,10 +115,10 @@ uint32_t DeviceMBI5039Set(DeviceMBI5039* pDev, uint16_t* pOutput, ExtCodeDeviceM
   return FUNC_OK;
 }
 
-/*Сброс выходов драйвера*/
+/*РЎР±СЂРѕСЃ РІС‹С…РѕРґРѕРІ РґСЂР°Р№РІРµСЂР°*/
 uint32_t DeviceMBI5039Reset(DeviceMBI5039* pDev,  ExtCodeDeviceMBI5039* pExCode)
 {
-  /*Проверка входных данных*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РґР°РЅРЅС‹С…*/
   if(!pDev || !pExCode)
     return FUNC_INVALID_PARAM;  
     
@@ -128,7 +128,7 @@ uint32_t DeviceMBI5039Reset(DeviceMBI5039* pDev,  ExtCodeDeviceMBI5039* pExCode)
   if(!WriteData)
     return FUNC_HEAP_MEM_ERROR;
   
-  /*Сброс выходов драйвера*/
+  /*РЎР±СЂРѕСЃ РІС‹С…РѕРґРѕРІ РґСЂР°Р№РІРµСЂР°*/
   HAL_StatusTypeDef HALRes;  
   
   HAL_GPIO_WritePin(pDev->pGPIONSSPort, pDev->GPIONSSNum, GPIO_PIN_RESET);    

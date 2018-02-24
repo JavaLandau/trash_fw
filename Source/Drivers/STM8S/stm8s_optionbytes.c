@@ -1,6 +1,6 @@
 /**
   \file    stm8s_optionbytes.c 
-  \brief   Исполняемый файл драйвера управления Option Bytes ядра STM8S
+  \brief   РСЃРїРѕР»РЅСЏРµРјС‹Р№ С„Р°Р№Р» РґСЂР°Р№РІРµСЂР° СѓРїСЂР°РІР»РµРЅРёСЏ Option Bytes СЏРґСЂР° STM8S
   \author  JavaLandau
   \version 1.0
   \date    20.12.2017 
@@ -9,7 +9,7 @@
 #include "stm8s_optionbytes.h"
 #include "BitsMaskOperations.h"
 
-/** @name Регистры Option Bytes
+/** @name Р РµРіРёСЃС‚СЂС‹ Option Bytes
 */                        
 ///@{
 #define OPT0     (((volatile char*)(0x004800)))
@@ -31,7 +31,7 @@
 #define NOPTBL   (((volatile char*)(0x00487F)))
 ///@}
 
-/*Настройка доступа к флеш-памяти*/
+/*РќР°СЃС‚СЂРѕР№РєР° РґРѕСЃС‚СѓРїР° Рє С„Р»РµС€-РїР°РјСЏС‚Рё*/
 uint32_t stm8s_optionbytes_SetFlashWait(char WaitState)
 {
   CHANGE_REG(OPT7,WaitState);

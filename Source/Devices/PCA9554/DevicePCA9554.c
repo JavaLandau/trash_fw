@@ -1,6 +1,6 @@
 /**
   \file    DevicePCA9554.c 
-  \brief   Исполняемый файл расширителя портов GPIO PCA9554
+  \brief   РСЃРїРѕР»РЅСЏРµРјС‹Р№ С„Р°Р№Р» СЂР°СЃС€РёСЂРёС‚РµР»СЏ РїРѕСЂС‚РѕРІ GPIO PCA9554
   \author  JavaLandau
   \version 1.0
   \date    20.12.2017 
@@ -14,72 +14,72 @@
 #include "GPIOfun.h"
 
 /**
-  \defgroup module_service_PCA9554 Служебные функции для работы с PCA9554
-  \brief Модуль служебных функций, необходимых для работы с расширителем портов GPIO PCA9554
+  \defgroup module_service_PCA9554 РЎР»СѓР¶РµР±РЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ PCA9554
+  \brief РњРѕРґСѓР»СЊ СЃР»СѓР¶РµР±РЅС‹С… С„СѓРЅРєС†РёР№, РЅРµРѕР±С…РѕРґРёРјС‹С… РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ СЂР°СЃС€РёСЂРёС‚РµР»РµРј РїРѕСЂС‚РѕРІ GPIO PCA9554
 @{
 */
 
-///Тип микросхемы
+///РўРёРї РјРёРєСЂРѕСЃС…РµРјС‹
 #if !defined(PCA9554) && !defined(PCA9554A)
 #define PCA9554
 #endif
 
-///Старший адрес \f$I^2C\f$  микросхемы
+///РЎС‚Р°СЂС€РёР№ Р°РґСЂРµСЃ \f$I^2C\f$  РјРёРєСЂРѕСЃС…РµРјС‹
 #ifdef PCA9554
 #define HIGH_ADDRESS                            (0x20 << 0x1)
 #else
 #define HIGH_ADDRESS                            (0x38 << 0x1)
 #endif
 
-///Номер порта GPIO
+///РќРѕРјРµСЂ РїРѕСЂС‚Р° GPIO
 #define PORT_PIN(NUM)                           (1<<(NUM))	                      
 
-///Изменение отдельного бита в байте
+///РР·РјРµРЅРµРЅРёРµ РѕС‚РґРµР»СЊРЅРѕРіРѕ Р±РёС‚Р° РІ Р±Р°Р№С‚Рµ
 #define SET_BIT_OF_BYTE(BYTE, BIT, NUM)         if(BIT) BYTE|=(uint8_t)(1<<(NUM)); else BYTE&=(uint8_t)(~(1<<(NUM))); 
 
-///Время ожидания ответа от устройства \f$I^2C\f$	
+///Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РѕС‚РІРµС‚Р° РѕС‚ СѓСЃС‚СЂРѕР№СЃС‚РІР° \f$I^2C\f$	
 #define OS_TIME_WAIT_I2C                		100	
 
-///Длина пакета \f$I^2C\f$ в байтах
+///Р”Р»РёРЅР° РїР°РєРµС‚Р° \f$I^2C\f$ РІ Р±Р°Р№С‚Р°С…
 #define LENGTH_PACKET                   		2	
 
-///Тип команды
+///РўРёРї РєРѕРјР°РЅРґС‹
 typedef enum _DevicePCA9554TypeCmd {
-  CMD_INPUT_PORT_REG = 0x0,                             ///<Запросить состояние входа
-  CMD_OUTPUT_PORT_REG,                                  ///<Задать состояние выхода  
-  CMD_POLARITY_INVERSION_PORT_REG,                      ///<Инвертировать состояние входа/выхода
-  CMD_CONF_REG                                          ///<Задать конфигурацию портов 
+  CMD_INPUT_PORT_REG = 0x0,                             ///<Р—Р°РїСЂРѕСЃРёС‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ РІС…РѕРґР°
+  CMD_OUTPUT_PORT_REG,                                  ///<Р—Р°РґР°С‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ РІС‹С…РѕРґР°  
+  CMD_POLARITY_INVERSION_PORT_REG,                      ///<РРЅРІРµСЂС‚РёСЂРѕРІР°С‚СЊ СЃРѕСЃС‚РѕСЏРЅРёРµ РІС…РѕРґР°/РІС‹С…РѕРґР°
+  CMD_CONF_REG                                          ///<Р—Р°РґР°С‚СЊ РєРѕРЅС„РёРіСѓСЂР°С†РёСЋ РїРѕСЂС‚РѕРІ 
 } DevicePCA9554TypeCmd;
 
 
-/**Запись в регистр PCA9554
-  \param[in] pDev указатель на структуру драйвера
-  \param[in] TypeCmd тип команды
-  \param[in] ConfByte значение регистра
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**Р—Р°РїРёСЃСЊ РІ СЂРµРіРёСЃС‚СЂ PCA9554
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[in] TypeCmd С‚РёРї РєРѕРјР°РЅРґС‹
+  \param[in] ConfByte Р·РЅР°С‡РµРЅРёРµ СЂРµРіРёСЃС‚СЂР°
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */
 static uint32_t prvDevicePCA9554WriteRegister(DevicePCA9554* pDev, DevicePCA9554TypeCmd TypeCmd, uint8_t ConfByte, ExtCodeDevicePCA9554* pExCode);
 
-/**Чтение регистра портов GPIO
-  \param[in] pDev указатель на структуру драйвера
-  \param[out] pInputPortReg значение регистра портов GPIO
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**Р§С‚РµРЅРёРµ СЂРµРіРёСЃС‚СЂР° РїРѕСЂС‚РѕРІ GPIO
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[out] pInputPortReg Р·РЅР°С‡РµРЅРёРµ СЂРµРіРёСЃС‚СЂР° РїРѕСЂС‚РѕРІ GPIO
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */
 static uint32_t prvDevicePCA9554ReadRegister(DevicePCA9554* pDev, uint8_t* pInputPortReg, ExtCodeDevicePCA9554* pExCode);
 
 /**
 @}
-  \defgroup module_PCA9554 Интерфейсные функции для работы с PCA9554
-  \brief Модуль, предоставляющий пользователю необходимый функционал для работы с расширителем портов GPIO PCA9554
+  \defgroup module_PCA9554 РРЅС‚РµСЂС„РµР№СЃРЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ PCA9554
+  \brief РњРѕРґСѓР»СЊ, РїСЂРµРґРѕСЃС‚Р°РІР»СЏСЋС‰РёР№ РїРѕР»СЊР·РѕРІР°С‚РµР»СЋ РЅРµРѕР±С…РѕРґРёРјС‹Р№ С„СѓРЅРєС†РёРѕРЅР°Р» РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ СЂР°СЃС€РёСЂРёС‚РµР»РµРј РїРѕСЂС‚РѕРІ GPIO PCA9554
 @{
 */
 
-/* Инициализация драйвера PCA9554*/
+/* РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РґСЂР°Р№РІРµСЂР° PCA9554*/
 uint32_t DevicePCA9554Create(DevicePCA9554Param* pDevParam, DevicePCA9554* pDev, ExtCodeDevicePCA9554* pExCode)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pDevParam || !pDev || !pExCode)
     return FUNC_INVALID_PARAM;
   
@@ -92,7 +92,7 @@ uint32_t DevicePCA9554Create(DevicePCA9554Param* pDevParam, DevicePCA9554* pDev,
     
   pDev->DevAddress = pDevParam->AddrDevice | HIGH_ADDRESS; 
   
-  /*Инициализация I2C*/
+  /*РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ I2C*/
   pDev->I2CDrv.State = HAL_I2C_STATE_RESET;
   pDev->I2CDrv.Instance = pDevParam->pInstanceI2CDrv;
   pDev->I2CDrv.Init.Timing = 0x2010091A;
@@ -109,21 +109,21 @@ uint32_t DevicePCA9554Create(DevicePCA9554Param* pDevParam, DevicePCA9554* pDev,
     return FUNC_ERROR;
   }
 
-  /*Конфигурирование аналогового фильтра*/
+  /*РљРѕРЅС„РёРіСѓСЂРёСЂРѕРІР°РЅРёРµ Р°РЅР°Р»РѕРіРѕРІРѕРіРѕ С„РёР»СЊС‚СЂР°*/
   if (HAL_I2CEx_ConfigAnalogFilter(&pDev->I2CDrv, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
   {
     *pExCode = DEVICE_PCA9554_ERROR_INIT_I2C;
     return FUNC_ERROR;
   }
 
-  /*Конфигурирование цифрового фильтра*/  
+  /*РљРѕРЅС„РёРіСѓСЂРёСЂРѕРІР°РЅРёРµ С†РёС„СЂРѕРІРѕРіРѕ С„РёР»СЊС‚СЂР°*/  
   if (HAL_I2CEx_ConfigDigitalFilter(&pDev->I2CDrv, 0) != HAL_OK)
   {
     *pExCode = DEVICE_PCA9554_ERROR_INIT_I2C;
     return FUNC_ERROR;
   }
   
-  /*Инициализация GPIO*/
+  /*РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ GPIO*/
   GPIO_InitTypeDef GPIO_InitStruct;
   pDev->pGPIOINTPort = NULL;
   
@@ -143,10 +143,10 @@ uint32_t DevicePCA9554Create(DevicePCA9554Param* pDevParam, DevicePCA9554* pDev,
   return FUNC_OK;
 }
 
-/*Конфигурирование отдельных портов GPIO*/
+/*РљРѕРЅС„РёРіСѓСЂРёСЂРѕРІР°РЅРёРµ РѕС‚РґРµР»СЊРЅС‹С… РїРѕСЂС‚РѕРІ GPIO*/
 uint32_t DevicePCA9554SetConfPort(DevicePCA9554* pDev, uint8_t NumPort, uint8_t PortDirection, ExtCodeDevicePCA9554* pExCode)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pDev || !pExCode)
     return FUNC_INVALID_PARAM;  
   
@@ -158,7 +158,7 @@ uint32_t DevicePCA9554SetConfPort(DevicePCA9554* pDev, uint8_t NumPort, uint8_t 
   if(PortDirection != PORT_PIN_INPUT && PortDirection != PORT_PIN_OUTPUT)
     return FUNC_INVALID_PARAM;  
   
-  /*Конфигурирование порта GPIO*/
+  /*РљРѕРЅС„РёРіСѓСЂРёСЂРѕРІР°РЅРёРµ РїРѕСЂС‚Р° GPIO*/
   uint32_t Res;
   uint8_t ConfByte = pDev->ConfRegister;
   SET_BIT_OF_BYTE(ConfByte, PortDirection, NumPort);
@@ -173,16 +173,16 @@ uint32_t DevicePCA9554SetConfPort(DevicePCA9554* pDev, uint8_t NumPort, uint8_t 
   return FUNC_OK;  
 }
 
-/*Конфигурирование всех портов GPIO*/
+/*РљРѕРЅС„РёРіСѓСЂРёСЂРѕРІР°РЅРёРµ РІСЃРµС… РїРѕСЂС‚РѕРІ GPIO*/
 uint32_t DevicePCA9554SetConfRegister(DevicePCA9554* pDev, uint8_t* pPortDirection, ExtCodeDevicePCA9554* pExCode)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pDev || !pPortDirection || !pExCode)
     return FUNC_INVALID_PARAM;
   
   *pExCode = DEVICE_PCA9554_NOT_CODE;    
   
-  /*Конфигурирование портов GPIO*/
+  /*РљРѕРЅС„РёРіСѓСЂРёСЂРѕРІР°РЅРёРµ РїРѕСЂС‚РѕРІ GPIO*/
   uint8_t ConfByte = 0x0;
   uint32_t Res;
   
@@ -199,16 +199,16 @@ uint32_t DevicePCA9554SetConfRegister(DevicePCA9554* pDev, uint8_t* pPortDirecti
   return FUNC_OK;
 }
 
-/*Считывание значений всех входов GPIO*/
+/*РЎС‡РёС‚С‹РІР°РЅРёРµ Р·РЅР°С‡РµРЅРёР№ РІСЃРµС… РІС…РѕРґРѕРІ GPIO*/
 uint32_t DevicePCA9554GetAllInputPorts(DevicePCA9554* pDev, GPIO_PinState* pPortState, ExtCodeDevicePCA9554* pExCode)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pDev || !pExCode || !pPortState)
     return FUNC_INVALID_PARAM;
   
   *pExCode = DEVICE_PCA9554_NOT_CODE;  
   
-  /*Считывание значений всех входов GPIO*/
+  /*РЎС‡РёС‚С‹РІР°РЅРёРµ Р·РЅР°С‡РµРЅРёР№ РІСЃРµС… РІС…РѕРґРѕРІ GPIO*/
   uint32_t Res;    
   uint8_t InputByte;
     
@@ -228,10 +228,10 @@ uint32_t DevicePCA9554GetAllInputPorts(DevicePCA9554* pDev, GPIO_PinState* pPort
   return FUNC_OK;      
 }
 
-/*Считывание значения отдельного входа GPIO*/
+/*РЎС‡РёС‚С‹РІР°РЅРёРµ Р·РЅР°С‡РµРЅРёСЏ РѕС‚РґРµР»СЊРЅРѕРіРѕ РІС…РѕРґР° GPIO*/
 uint32_t DevicePCA9554GetInputPort(DevicePCA9554* pDev, uint8_t NumPort, GPIO_PinState* pPortState, ExtCodeDevicePCA9554* pExCode)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pDev || !pExCode || !pPortState)
     return FUNC_INVALID_PARAM;
   
@@ -243,7 +243,7 @@ uint32_t DevicePCA9554GetInputPort(DevicePCA9554* pDev, uint8_t NumPort, GPIO_Pi
   if(((PORT_PIN(NumPort) & pDev->ConfRegister)>>NumPort) == PORT_PIN_OUTPUT)
     return FUNC_INVALID_PARAM;
   
-  /*Считывание значения входа GPIO*/
+  /*РЎС‡РёС‚С‹РІР°РЅРёРµ Р·РЅР°С‡РµРЅРёСЏ РІС…РѕРґР° GPIO*/
   uint32_t Res;
   uint8_t InputByte;
     
@@ -260,16 +260,16 @@ uint32_t DevicePCA9554GetInputPort(DevicePCA9554* pDev, uint8_t NumPort, GPIO_Pi
   return FUNC_OK;  
 }
 
-/*Установка значений всех выходов GPIO*/
+/*РЈСЃС‚Р°РЅРѕРІРєР° Р·РЅР°С‡РµРЅРёР№ РІСЃРµС… РІС‹С…РѕРґРѕРІ GPIO*/
 uint32_t DevicePCA9554SetAllOutputPorts(DevicePCA9554* pDev, GPIO_PinState* pPortState, ExtCodeDevicePCA9554* pExCode)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pDev || !pExCode || !pPortState)
     return FUNC_INVALID_PARAM;
   
   *pExCode = DEVICE_PCA9554_NOT_CODE; 
   
-  /*Установка значений всех выходов GPIO*/
+  /*РЈСЃС‚Р°РЅРѕРІРєР° Р·РЅР°С‡РµРЅРёР№ РІСЃРµС… РІС‹С…РѕРґРѕРІ GPIO*/
   uint32_t Res;
   uint8_t OutputByte = 0x0;
   for(uint8_t i = 0; i < PCA9554_NUM_GPIO; i++)
@@ -288,10 +288,10 @@ uint32_t DevicePCA9554SetAllOutputPorts(DevicePCA9554* pDev, GPIO_PinState* pPor
   return FUNC_OK;  
 }
 
-/*Установка значения отдельного выхода GPIO*/
+/*РЈСЃС‚Р°РЅРѕРІРєР° Р·РЅР°С‡РµРЅРёСЏ РѕС‚РґРµР»СЊРЅРѕРіРѕ РІС‹С…РѕРґР° GPIO*/
 uint32_t DevicePCA9554SetOutputPort(DevicePCA9554* pDev, uint8_t NumPort, GPIO_PinState PortState, ExtCodeDevicePCA9554* pExCode)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pDev || !pExCode)
     return FUNC_INVALID_PARAM;
   
@@ -306,7 +306,7 @@ uint32_t DevicePCA9554SetOutputPort(DevicePCA9554* pDev, uint8_t NumPort, GPIO_P
   uint8_t GPIOPort;
   uint32_t Res;
   
-  /*Установка значения выхода GPIO*/
+  /*РЈСЃС‚Р°РЅРѕРІРєР° Р·РЅР°С‡РµРЅРёСЏ РІС‹С…РѕРґР° GPIO*/
   if(PortState == GPIO_PIN_SET)
     GPIOPort = 1;
   else
@@ -329,10 +329,10 @@ uint32_t DevicePCA9554SetOutputPort(DevicePCA9554* pDev, uint8_t NumPort, GPIO_P
 @}
 */
 
-/*Чтение регистра портов GPIO*/
+/*Р§С‚РµРЅРёРµ СЂРµРіРёСЃС‚СЂР° РїРѕСЂС‚РѕРІ GPIO*/
 static uint32_t prvDevicePCA9554ReadRegister(DevicePCA9554* pDev, uint8_t* pInputPortReg, ExtCodeDevicePCA9554* pExCode)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pDev || !pExCode || !pInputPortReg)
     return FUNC_INVALID_PARAM;
   
@@ -341,7 +341,7 @@ static uint32_t prvDevicePCA9554ReadRegister(DevicePCA9554* pDev, uint8_t* pInpu
   HAL_StatusTypeDef HALRes;
   uint8_t WriteData;
   
-  /*Передача команды*/
+  /*РџРµСЂРµРґР°С‡Р° РєРѕРјР°РЅРґС‹*/
   WriteData = (uint8_t)CMD_INPUT_PORT_REG;
   
   HALRes = HAL_I2C_Master_Transmit(&pDev->I2CDrv, pDev->DevAddress, &WriteData, 1, OS_TIME_WAIT_I2C);
@@ -352,7 +352,7 @@ static uint32_t prvDevicePCA9554ReadRegister(DevicePCA9554* pDev, uint8_t* pInpu
     return FUNC_ERROR;
   }  
   
-  /*Чтение данных*/
+  /*Р§С‚РµРЅРёРµ РґР°РЅРЅС‹С…*/
   uint8_t ReadData = 0xFF;
   
   HALRes = HAL_I2C_Master_Receive(&pDev->I2CDrv, pDev->DevAddress, &ReadData, 1, OS_TIME_WAIT_I2C);
@@ -367,10 +367,10 @@ static uint32_t prvDevicePCA9554ReadRegister(DevicePCA9554* pDev, uint8_t* pInpu
   return FUNC_OK;
 }
 
-/*Запись в регистр PCA9554*/
+/*Р—Р°РїРёСЃСЊ РІ СЂРµРіРёСЃС‚СЂ PCA9554*/
 static uint32_t prvDevicePCA9554WriteRegister(DevicePCA9554* pDev, DevicePCA9554TypeCmd TypeCmd, uint8_t ConfByte, ExtCodeDevicePCA9554* pExCode)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pDev || !pExCode)
     return FUNC_INVALID_PARAM;
   
@@ -382,7 +382,7 @@ static uint32_t prvDevicePCA9554WriteRegister(DevicePCA9554* pDev, DevicePCA9554
   HAL_StatusTypeDef HALRes;
   uint8_t WriteData[LENGTH_PACKET];
   
-  /*Передача данных*/
+  /*РџРµСЂРµРґР°С‡Р° РґР°РЅРЅС‹С…*/
   WriteData[0] = (uint8_t)TypeCmd;
   WriteData[1] = ConfByte;
   
@@ -394,7 +394,7 @@ static uint32_t prvDevicePCA9554WriteRegister(DevicePCA9554* pDev, DevicePCA9554
     return FUNC_ERROR;
   }
   
-  /*Верификация*/  
+  /*Р’РµСЂРёС„РёРєР°С†РёСЏ*/  
   uint8_t ReadData = 0xFF;
   
   HALRes = HAL_I2C_Master_Receive(&pDev->I2CDrv, pDev->DevAddress, &ReadData, 1, OS_TIME_WAIT_I2C);

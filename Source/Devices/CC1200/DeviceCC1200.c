@@ -1,6 +1,6 @@
 /**
   \file    DeviceCC1200.c 
-  \brief   Исполняемый файл драйвера приёмопередатчика CC1200
+  \brief   РСЃРїРѕР»РЅСЏРµРјС‹Р№ С„Р°Р№Р» РґСЂР°Р№РІРµСЂР° РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР° CC1200
   \author  JavaLandau
   \version 1.0
   \date    20.12.2017 
@@ -12,130 +12,130 @@
 //#include "TCPCommandConsole.h"
 
 /**
-  \defgroup module_service_CC1200 Служебные функции для работы с CC1200
-  \brief Модуль служебных функций, необходимых для работы с микросхемой приёмопередатчика CC1200
+  \defgroup module_service_CC1200 РЎР»СѓР¶РµР±РЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ CC1200
+  \brief РњРѕРґСѓР»СЊ СЃР»СѓР¶РµР±РЅС‹С… С„СѓРЅРєС†РёР№, РЅРµРѕР±С…РѕРґРёРјС‹С… РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РјРёРєСЂРѕСЃС…РµРјРѕР№ РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР° CC1200
 @{
 */
 
-#define TIME_WAIT_SEM_SPI_DMA   1000                    ///<Время ожидания окончания приема/передачи данных SPI по DMA
+#define TIME_WAIT_SEM_SPI_DMA   1000                    ///<Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РѕРєРѕРЅС‡Р°РЅРёСЏ РїСЂРёРµРјР°/РїРµСЂРµРґР°С‡Рё РґР°РЅРЅС‹С… SPI РїРѕ DMA
 
-#define __STATE(BYTE)           (((BYTE)>>0x4)&0x7)     ///<Текущее состояние устройства
-#define __CHIP_RDYn(BYTE)       (((BYTE)>>0x7)&0x1)     ///<Готовность устройства
+#define __STATE(BYTE)           (((BYTE)>>0x4)&0x7)     ///<РўРµРєСѓС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ СѓСЃС‚СЂРѕР№СЃС‚РІР°
+#define __CHIP_RDYn(BYTE)       (((BYTE)>>0x7)&0x1)     ///<Р“РѕС‚РѕРІРЅРѕСЃС‚СЊ СѓСЃС‚СЂРѕР№СЃС‚РІР°
 
-#define WRITE_SINGLE_ACCESS            0x00             ///<Режим записи байта
-#define READ_SINGLE_ACCESS             0x80             ///<Режим чтения байта
+#define WRITE_SINGLE_ACCESS            0x00             ///<Р РµР¶РёРј Р·Р°РїРёСЃРё Р±Р°Р№С‚Р°
+#define READ_SINGLE_ACCESS             0x80             ///<Р РµР¶РёРј С‡С‚РµРЅРёСЏ Р±Р°Р№С‚Р°
 
-#define WRITE_BURST_ACCESS             0x40             ///<Пакетный режим записи данных
-#define READ_BURST_ACCESS              0xC0             ///<Пакетный режим чтения данных
+#define WRITE_BURST_ACCESS             0x40             ///<РџР°РєРµС‚РЅС‹Р№ СЂРµР¶РёРј Р·Р°РїРёСЃРё РґР°РЅРЅС‹С…
+#define READ_BURST_ACCESS              0xC0             ///<РџР°РєРµС‚РЅС‹Р№ СЂРµР¶РёРј С‡С‚РµРЅРёСЏ РґР°РЅРЅС‹С…
 
-#define RX_FIFO_BUF_SIZE               0x80             ///<Размер буфера принимаемых данных в байтах
+#define RX_FIFO_BUF_SIZE               0x80             ///<Р Р°Р·РјРµСЂ Р±СѓС„РµСЂР° РїСЂРёРЅРёРјР°РµРјС‹С… РґР°РЅРЅС‹С… РІ Р±Р°Р№С‚Р°С…
 
-#define CC1200_TIMEOUT_INFINITE        0                ///<Время ожидания не ограничено
-#define TIME_WAITING_RECEIVE           1                ///<Время ожидания перед приёмом данных
+#define CC1200_TIMEOUT_INFINITE        0                ///<Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РЅРµ РѕРіСЂР°РЅРёС‡РµРЅРѕ
+#define TIME_WAITING_RECEIVE           1                ///<Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РїРµСЂРµРґ РїСЂРёС‘РјРѕРј РґР°РЅРЅС‹С…
 
-/**Установка команды для приёмопередатчика
-  \param[in] pDev указатель на структуру драйвера
-  \param[in] AddressCmd код команды
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**РЈСЃС‚Р°РЅРѕРІРєР° РєРѕРјР°РЅРґС‹ РґР»СЏ РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[in] AddressCmd РєРѕРґ РєРѕРјР°РЅРґС‹
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */ 
 static uint32_t prvDeviceCC1200CommandStrobes(DeviceCC1200* pDev, uint8_t AddressCmd, ExtCodeDeviceCC1200* pExCode);
 
-/**Чтение регистра из расширенной области памяти приёмопередатчика
-  \param[in] pDev указатель на структуру драйвера
-  \param[in] AddrReg адрес регистра
-  \param[out] pValueReg значение считываемого регистра
-  \param[out] pStatusByte значение считываемого байта состояния устройства
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**Р§С‚РµРЅРёРµ СЂРµРіРёСЃС‚СЂР° РёР· СЂР°СЃС€РёСЂРµРЅРЅРѕР№ РѕР±Р»Р°СЃС‚Рё РїР°РјСЏС‚Рё РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[in] AddrReg Р°РґСЂРµСЃ СЂРµРіРёСЃС‚СЂР°
+  \param[out] pValueReg Р·РЅР°С‡РµРЅРёРµ СЃС‡РёС‚С‹РІР°РµРјРѕРіРѕ СЂРµРіРёСЃС‚СЂР°
+  \param[out] pStatusByte Р·РЅР°С‡РµРЅРёРµ СЃС‡РёС‚С‹РІР°РµРјРѕРіРѕ Р±Р°Р№С‚Р° СЃРѕСЃС‚РѕСЏРЅРёСЏ СѓСЃС‚СЂРѕР№СЃС‚РІР°
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */
 static uint32_t prvDeviceCC1200ReadExtendedRegister(DeviceCC1200* pDev, uint8_t AddrReg, uint8_t* pValueReg, uint8_t* pStatusByte, ExtCodeDeviceCC1200* pExCode);
 
-/**Чтение регистра из стандартной области памяти приёмопередатчика
-  \param[in] pDev указатель на структуру драйвера
-  \param[in] AddrReg адрес регистра
-  \param[out] pValueReg значение считываемого регистра
-  \param[out] pStatusByte значение считываемого байта состояния устройства
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**Р§С‚РµРЅРёРµ СЂРµРіРёСЃС‚СЂР° РёР· СЃС‚Р°РЅРґР°СЂС‚РЅРѕР№ РѕР±Р»Р°СЃС‚Рё РїР°РјСЏС‚Рё РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[in] AddrReg Р°РґСЂРµСЃ СЂРµРіРёСЃС‚СЂР°
+  \param[out] pValueReg Р·РЅР°С‡РµРЅРёРµ СЃС‡РёС‚С‹РІР°РµРјРѕРіРѕ СЂРµРіРёСЃС‚СЂР°
+  \param[out] pStatusByte Р·РЅР°С‡РµРЅРёРµ СЃС‡РёС‚С‹РІР°РµРјРѕРіРѕ Р±Р°Р№С‚Р° СЃРѕСЃС‚РѕСЏРЅРёСЏ СѓСЃС‚СЂРѕР№СЃС‚РІР°
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */
 static uint32_t prvDeviceCC1200ReadRegister(DeviceCC1200* pDev, uint8_t AddrReg, uint8_t* pValueReg, uint8_t* pStatusByte, ExtCodeDeviceCC1200* pExCode);
 
-/**Запись регистра из расширенной области памяти приёмопередатчика
-  \param[in] pDev указатель на структуру драйвера
-  \param[in] AddrReg адрес регистра
-  \param[in] ValueReg значение, записываемое в регистр
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**Р—Р°РїРёСЃСЊ СЂРµРіРёСЃС‚СЂР° РёР· СЂР°СЃС€РёСЂРµРЅРЅРѕР№ РѕР±Р»Р°СЃС‚Рё РїР°РјСЏС‚Рё РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[in] AddrReg Р°РґСЂРµСЃ СЂРµРіРёСЃС‚СЂР°
+  \param[in] ValueReg Р·РЅР°С‡РµРЅРёРµ, Р·Р°РїРёСЃС‹РІР°РµРјРѕРµ РІ СЂРµРіРёСЃС‚СЂ
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */
 static uint32_t prvDeviceCC1200WriteExtendedRegister(DeviceCC1200* pDev, uint8_t AddrReg, uint8_t ValueReg, ExtCodeDeviceCC1200* pExCode);
 
-/**Запись регистра из стандартной области памяти приёмопередатчика
-  \param[in] pDev указатель на структуру драйвера
-  \param[in] AddrReg адрес регистра
-  \param[in] ValueReg значение, записываемое в регистр
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**Р—Р°РїРёСЃСЊ СЂРµРіРёСЃС‚СЂР° РёР· СЃС‚Р°РЅРґР°СЂС‚РЅРѕР№ РѕР±Р»Р°СЃС‚Рё РїР°РјСЏС‚Рё РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[in] AddrReg Р°РґСЂРµСЃ СЂРµРіРёСЃС‚СЂР°
+  \param[in] ValueReg Р·РЅР°С‡РµРЅРёРµ, Р·Р°РїРёСЃС‹РІР°РµРјРѕРµ РІ СЂРµРіРёСЃС‚СЂ
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */
 static uint32_t prvDeviceCC1200WriteRegister(DeviceCC1200* pDev, uint8_t AddrReg, uint8_t ValueReg, ExtCodeDeviceCC1200* pExCode);
 
-/**Установка параметров приёмопередатчика по умолчанию
-  \param[in] pDev указатель на структуру драйвера
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**РЈСЃС‚Р°РЅРѕРІРєР° РїР°СЂР°РјРµС‚СЂРѕРІ РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР° РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */
 static uint32_t prvDeviceCC1200SetDefsParams(DeviceCC1200* pDev, ExtCodeDeviceCC1200* pExCode);
 
-/**Установка режима приёмопередатчика
-  \param[in] pDev указатель на структуру драйвера
-  \param[in] DevMode режим приёмопередатчика
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**РЈСЃС‚Р°РЅРѕРІРєР° СЂРµР¶РёРјР° РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[in] DevMode СЂРµР¶РёРј РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */
 static uint32_t prvDeviceCC1200SetMode(DeviceCC1200* pDev, DeviceCC1200Mode DevMode, ExtCodeDeviceCC1200* pExCode);
 
-/**Чтение байта из буфера RX
-  \param[in] pDev указатель на структуру драйвера
-  \param[out] pValue считываемый байт
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**Р§С‚РµРЅРёРµ Р±Р°Р№С‚Р° РёР· Р±СѓС„РµСЂР° RX
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[out] pValue СЃС‡РёС‚С‹РІР°РµРјС‹Р№ Р±Р°Р№С‚
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */
 static uint32_t prvDeviceCC1200PopRXFIFO(DeviceCC1200* pDev, uint8_t *pValue, ExtCodeDeviceCC1200* pExCode);
 
-/**Запись байта в буфер TX
-  \param[in] pDev указатель на структуру драйвера
-  \param[in] Value записываемый байт
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**Р—Р°РїРёСЃСЊ Р±Р°Р№С‚Р° РІ Р±СѓС„РµСЂ TX
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[in] Value Р·Р°РїРёСЃС‹РІР°РµРјС‹Р№ Р±Р°Р№С‚
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */
 static uint32_t prvDeviceCC1200PushTXFIFO(DeviceCC1200* pDev, uint8_t Value, ExtCodeDeviceCC1200* pExCode);
 
-/**Очистка буфера RX
-  \param[in] pDev указатель на структуру драйвера
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**РћС‡РёСЃС‚РєР° Р±СѓС„РµСЂР° RX
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */
 static uint32_t prvDeviceCC1200FlushRXFIFO(DeviceCC1200* pDev, ExtCodeDeviceCC1200* pExCode);
 
-/**Функция ожидания готовности приёмопередатчика
-  \param[in] pDev указатель на структуру драйвера
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \param[in] Timeout время ожидания
-  \return Результат выполнения функции 
+/**Р¤СѓРЅРєС†РёСЏ РѕР¶РёРґР°РЅРёСЏ РіРѕС‚РѕРІРЅРѕСЃС‚Рё РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \param[in] Timeout РІСЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */
 static uint32_t prvDeviceCC1200WaitStausByte(DeviceCC1200* pDev, ExtCodeDeviceCC1200* pExCode, uint32_t Timeout);
 
 /**
 @}
-  \defgroup module_CC1200 Интерфейсные функции для работы с CC1200
-  \brief Модуль, предоставляющий пользователю необходимый функционал для работы с микросхемой приёмопередатчика CC1200
+  \defgroup module_CC1200 РРЅС‚РµСЂС„РµР№СЃРЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ CC1200
+  \brief РњРѕРґСѓР»СЊ, РїСЂРµРґРѕСЃС‚Р°РІР»СЏСЋС‰РёР№ РїРѕР»СЊР·РѕРІР°С‚РµР»СЋ РЅРµРѕР±С…РѕРґРёРјС‹Р№ С„СѓРЅРєС†РёРѕРЅР°Р» РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РјРёРєСЂРѕСЃС…РµРјРѕР№ РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР° CC1200
 @{
 */
 
-/*Инициализация драйвера приёмопередатчика*/
+/*РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РґСЂР°Р№РІРµСЂР° РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°*/
 uint32_t DeviceCC1200Create(DeviceCC1200Param* pDevParam, DeviceCC1200* pDev, ExtCodeDeviceCC1200* pExCode)
 {
-  /*Проверка входных данных*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РґР°РЅРЅС‹С…*/
   if(!pExCode)
     return FUNC_INVALID_PARAM;
     
@@ -147,7 +147,7 @@ uint32_t DeviceCC1200Create(DeviceCC1200Param* pDevParam, DeviceCC1200* pDev, Ex
     
   pDev->DevAddr = pDevParam->DevAddr;
   
-  /*Инициализация SPI*/
+  /*РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ SPI*/
   pDev->SPIDrv.State = HAL_SPI_STATE_RESET;
   pDev->SPIDrv.Instance = pDevParam->pInstanceSPIDrv;
   pDev->SPIDrv.Init.Mode = SPI_MODE_MASTER;
@@ -168,7 +168,7 @@ uint32_t DeviceCC1200Create(DeviceCC1200Param* pDevParam, DeviceCC1200* pDev, Ex
     return FUNC_ERROR;
   }
  
-  /*Инициализация DMA TX*/
+  /*РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ DMA TX*/
   pDev->DMATXDrv.Instance = pDevParam->pInstanceDMATXDrv;
   pDev->DMATXDrv.Init.Channel = pDevParam->DMATXChannel;
   pDev->DMATXDrv.Init.Direction = DMA_MEMORY_TO_PERIPH;
@@ -189,7 +189,7 @@ uint32_t DeviceCC1200Create(DeviceCC1200Param* pDevParam, DeviceCC1200* pDev, Ex
   }
   pDev->DMATXDrv.Parent = (void*)(&pDev->SPIDrv);
    
-  /*Инициализация DMA RX*/
+  /*РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ DMA RX*/
   pDev->DMARXDrv.Instance = pDevParam->pInstanceDMARXDrv;
   pDev->DMARXDrv.Init.Channel = pDevParam->DMARXChannel;
   pDev->DMARXDrv.Init.Direction = DMA_PERIPH_TO_MEMORY;
@@ -218,7 +218,7 @@ uint32_t DeviceCC1200Create(DeviceCC1200Param* pDevParam, DeviceCC1200* pDev, Ex
   
   uint32_t Res;
   
-  /*Перезагрузка приёмопередатчика*/
+  /*РџРµСЂРµР·Р°РіСЂСѓР·РєР° РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°*/
   Res = DeviceCC1200Reset(*ppDev, pExCode);
   
   if(Res != FUNC_OK)
@@ -229,7 +229,7 @@ uint32_t DeviceCC1200Create(DeviceCC1200Param* pDevParam, DeviceCC1200* pDev, Ex
   if(Res != FUNC_OK)
     return Res;    
   
-  /*Установка параметров по умолчанию*/
+  /*РЈСЃС‚Р°РЅРѕРІРєР° РїР°СЂР°РјРµС‚СЂРѕРІ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ*/
   Res = prvDeviceCC1200SetDefsParams(*ppDev, pExCode);
     
   return Res;  
@@ -241,7 +241,7 @@ uint32_t DeviceCC1200Create(DeviceCC1200Param* pDevParam, DeviceCC1200* pDev, Ex
 @{
 */
 
-/** @name Определения для переконфигурации регистров приёмопередатчика на передачу
+/** @name РћРїСЂРµРґРµР»РµРЅРёСЏ РґР»СЏ РїРµСЂРµРєРѕРЅС„РёРіСѓСЂР°С†РёРё СЂРµРіРёСЃС‚СЂРѕРІ РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР° РЅР° РїРµСЂРµРґР°С‡Сѓ
 */                        
 ///@{
 #define DEF_FS_DIG1_TX                  0x04
@@ -256,17 +256,17 @@ uint32_t DeviceCC1200Create(DeviceCC1200Param* pDevParam, DeviceCC1200* pDev, Ex
 @{
 */
 
-/*Передача пакета данных фиксированного размера*/
+/*РџРµСЂРµРґР°С‡Р° РїР°РєРµС‚Р° РґР°РЅРЅС‹С… С„РёРєСЃРёСЂРѕРІР°РЅРЅРѕРіРѕ СЂР°Р·РјРµСЂР°*/
 uint32_t DeviceCC1200TransmitFixPacket(DeviceCC1200* pDev, uint8_t FixNumPacket, uint8_t* pPacket, ExtCodeDeviceCC1200* pExCode)
 {
-  /*Проверка входных данных*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РґР°РЅРЅС‹С…*/
   if(!pDev || !pPacket || !pExCode || !FixNumPacket)
     return FUNC_INVALID_PARAM;
   
   *pExCode  = DEVICE_CC1200_NOT_CODE; 
   uint32_t Res;
   
-  /*Переконфигурация регистров на передачу*/
+  /*РџРµСЂРµРєРѕРЅС„РёРіСѓСЂР°С†РёСЏ СЂРµРіРёСЃС‚СЂРѕРІ РЅР° РїРµСЂРµРґР°С‡Сѓ*/
   Res = prvDeviceCC1200WriteExtendedRegister(pDev, FS_DIG1, DEF_FS_DIG1_TX, pExCode);
   
   if(Res != FUNC_OK)
@@ -287,21 +287,21 @@ uint32_t DeviceCC1200TransmitFixPacket(DeviceCC1200* pDev, uint8_t FixNumPacket,
   if(Res != FUNC_OK)
     return Res;    
   
-  /*Получение количества байт, которые еще не переданы*/
+  /*РџРѕР»СѓС‡РµРЅРёРµ РєРѕР»РёС‡РµСЃС‚РІР° Р±Р°Р№С‚, РєРѕС‚РѕСЂС‹Рµ РµС‰Рµ РЅРµ РїРµСЂРµРґР°РЅС‹*/
   uint8_t TXBytes;    
   Res = prvDeviceCC1200ReadExtendedRegister(pDev, NUM_TXBYTES, &TXBytes, NULL, pExCode);
   
   if(Res != FUNC_OK)
     return Res;
   
-  /*Если в буфере есть данные, возвращаем ошибку*/
+  /*Р•СЃР»Рё РІ Р±СѓС„РµСЂРµ РµСЃС‚СЊ РґР°РЅРЅС‹Рµ, РІРѕР·РІСЂР°С‰Р°РµРј РѕС€РёР±РєСѓ*/
   if(TXBytes)  
   {
     *pExCode = DEVICE_CC1200_ERROR_TX_BUF_OVERFLOW;
     return FUNC_ERROR;
   }  
   
-  /*Отправка пакета данных через однобайтный режим передачи*/
+  /*РћС‚РїСЂР°РІРєР° РїР°РєРµС‚Р° РґР°РЅРЅС‹С… С‡РµСЂРµР· РѕРґРЅРѕР±Р°Р№С‚РЅС‹Р№ СЂРµР¶РёРј РїРµСЂРµРґР°С‡Рё*/
   Res = prvDeviceCC1200PushTXFIFO(pDev, FixNumPacket + 1, pExCode);
   
   if(Res != FUNC_OK)
@@ -320,7 +320,7 @@ uint32_t DeviceCC1200TransmitFixPacket(DeviceCC1200* pDev, uint8_t FixNumPacket,
       return Res;
   }  
   
-  /*Проверка количества переданных в буфер TX байт*/
+  /*РџСЂРѕРІРµСЂРєР° РєРѕР»РёС‡РµСЃС‚РІР° РїРµСЂРµРґР°РЅРЅС‹С… РІ Р±СѓС„РµСЂ TX Р±Р°Р№С‚*/
   Res = prvDeviceCC1200ReadExtendedRegister(pDev, NUM_TXBYTES, &TXBytes, NULL, pExCode);
   
   if(Res != FUNC_OK)
@@ -332,10 +332,10 @@ uint32_t DeviceCC1200TransmitFixPacket(DeviceCC1200* pDev, uint8_t FixNumPacket,
     return FUNC_ERROR;
   }    
   
-  /*Установка режима устройства на передачу*/
+  /*РЈСЃС‚Р°РЅРѕРІРєР° СЂРµР¶РёРјР° СѓСЃС‚СЂРѕР№СЃС‚РІР° РЅР° РїРµСЂРµРґР°С‡Сѓ*/
   Res = prvDeviceCC1200SetMode(pDev, DEVICE_CC1200_TRANSMIT, pExCode);
     
-  /*Ожидание передачи пакета*/
+  /*РћР¶РёРґР°РЅРёРµ РїРµСЂРµРґР°С‡Рё РїР°РєРµС‚Р°*/
   while(TXBytes)
   {
     Res = prvDeviceCC1200ReadExtendedRegister(pDev, NUM_TXBYTES, &TXBytes, NULL, pExCode);
@@ -344,7 +344,7 @@ uint32_t DeviceCC1200TransmitFixPacket(DeviceCC1200* pDev, uint8_t FixNumPacket,
       return Res;    
   }
   
-  /*Ожидание перехода состояния устройства в режим ожидания*/  
+  /*РћР¶РёРґР°РЅРёРµ РїРµСЂРµС…РѕРґР° СЃРѕСЃС‚РѕСЏРЅРёСЏ СѓСЃС‚СЂРѕР№СЃС‚РІР° РІ СЂРµР¶РёРј РѕР¶РёРґР°РЅРёСЏ*/  
   uint8_t ChipStatusByte;
     
   do 
@@ -364,7 +364,7 @@ uint32_t DeviceCC1200TransmitFixPacket(DeviceCC1200* pDev, uint8_t FixNumPacket,
 @{
 */
 
-/** @name Определения для переконфигурации регистров приёмопередатчика на приём
+/** @name РћРїСЂРµРґРµР»РµРЅРёСЏ РґР»СЏ РїРµСЂРµРєРѕРЅС„РёРіСѓСЂР°С†РёРё СЂРµРіРёСЃС‚СЂРѕРІ РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР° РЅР° РїСЂРёС‘Рј
 */                        
 ///@{
 #define DEF_FS_DIG1_RX                  0x07
@@ -379,10 +379,10 @@ uint32_t DeviceCC1200TransmitFixPacket(DeviceCC1200* pDev, uint8_t FixNumPacket,
 @{
 */
 
-/*Приём пакета данных фиксированного размера*/
+/*РџСЂРёС‘Рј РїР°РєРµС‚Р° РґР°РЅРЅС‹С… С„РёРєСЃРёСЂРѕРІР°РЅРЅРѕРіРѕ СЂР°Р·РјРµСЂР°*/
 uint32_t DeviceCC1200ReceiveFixPacket(DeviceCC1200* pDev, uint8_t FixNumPacket, uint8_t* pPacket, ExtCodeDeviceCC1200* pExCode, uint32_t Waiting)
 {
-  /*Проверка входных данных*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РґР°РЅРЅС‹С…*/
   if(!pDev || !pPacket || !pExCode || !FixNumPacket)
     return FUNC_INVALID_PARAM;
   
@@ -391,7 +391,7 @@ uint32_t DeviceCC1200ReceiveFixPacket(DeviceCC1200* pDev, uint8_t FixNumPacket, 
   uint8_t RXBytes;
   uint32_t TickWait = 0;
   
-  /*Переконфигурация регистров*/  
+  /*РџРµСЂРµРєРѕРЅС„РёРіСѓСЂР°С†РёСЏ СЂРµРіРёСЃС‚СЂРѕРІ*/  
   Res = prvDeviceCC1200WriteExtendedRegister(pDev, FS_DIG1, DEF_FS_DIG1_RX, pExCode);
   
   if(Res != FUNC_OK)
@@ -412,13 +412,13 @@ uint32_t DeviceCC1200ReceiveFixPacket(DeviceCC1200* pDev, uint8_t FixNumPacket, 
   if(Res != FUNC_OK)
     return Res;    
   
-  /*Установка режима приёма*/
+  /*РЈСЃС‚Р°РЅРѕРІРєР° СЂРµР¶РёРјР° РїСЂРёС‘РјР°*/
   Res = prvDeviceCC1200SetMode(pDev, DEVICE_CC1200_RECEIVE, pExCode);
   
   if(Res != FUNC_OK)
     return Res;
           
-  /*Приём данных*/
+  /*РџСЂРёС‘Рј РґР°РЅРЅС‹С…*/
   do
   {
     Res = prvDeviceCC1200ReadExtendedRegister(pDev, NUM_RXBYTES, &RXBytes, NULL, pExCode);
@@ -445,7 +445,7 @@ uint32_t DeviceCC1200ReceiveFixPacket(DeviceCC1200* pDev, uint8_t FixNumPacket, 
     }
   }while(RXBytes != (FixNumPacket + 2));
   
-  /*Проверка заголовка пакета принятых данных*/
+  /*РџСЂРѕРІРµСЂРєР° Р·Р°РіРѕР»РѕРІРєР° РїР°РєРµС‚Р° РїСЂРёРЅСЏС‚С‹С… РґР°РЅРЅС‹С…*/
   uint8_t LenPacket, DevAddr;
   Res = prvDeviceCC1200PopRXFIFO(pDev, &LenPacket, pExCode);
   
@@ -468,7 +468,7 @@ uint32_t DeviceCC1200ReceiveFixPacket(DeviceCC1200* pDev, uint8_t FixNumPacket, 
     return FUNC_ERROR;
   }  
   
-  /*Чтение пакета принятых данных через однобайтный режим чтения*/
+  /*Р§С‚РµРЅРёРµ РїР°РєРµС‚Р° РїСЂРёРЅСЏС‚С‹С… РґР°РЅРЅС‹С… С‡РµСЂРµР· РѕРґРЅРѕР±Р°Р№С‚РЅС‹Р№ СЂРµР¶РёРј С‡С‚РµРЅРёСЏ*/
   for(uint8_t i = 0; i < FixNumPacket; i++)  
   {
     Res = prvDeviceCC1200PopRXFIFO(pDev, &pPacket[i], pExCode);
@@ -480,7 +480,7 @@ uint32_t DeviceCC1200ReceiveFixPacket(DeviceCC1200* pDev, uint8_t FixNumPacket, 
   return FUNC_OK;  
 }
 
-/*Перезагрузка приёмопередатчика*/
+/*РџРµСЂРµР·Р°РіСЂСѓР·РєР° РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°*/
 uint32_t DeviceCC1200Reset(DeviceCC1200* pDev, ExtCodeDeviceCC1200* pExCode)
 {
   if(!pDev || !pExCode)
@@ -494,10 +494,10 @@ uint32_t DeviceCC1200Reset(DeviceCC1200* pDev, ExtCodeDeviceCC1200* pExCode)
   return Res;  
 }
 
-/*Чтение состояния приёмопередатчика*/
+/*Р§С‚РµРЅРёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°*/
 uint32_t DeviceCC1200ReadChipStatus(DeviceCC1200* pDev, uint8_t* pChipStatusByte, ExtCodeDeviceCC1200* pExCode)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pDev || !pChipStatusByte || !pExCode)
     return FUNC_INVALID_PARAM;
   
@@ -505,7 +505,7 @@ uint32_t DeviceCC1200ReadChipStatus(DeviceCC1200* pDev, uint8_t* pChipStatusByte
   osStatus osRes;
   HAL_StatusTypeDef Res;
   
-  /*Чтение состояния приёмопередатчика*/
+  /*Р§С‚РµРЅРёРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°*/
   uint8_t TransmitData = SNOP | READ_SINGLE_ACCESS;
   
   Res = HAL_SPI_TransmitReceive_DMA(&pDev->SPIDrv, &TransmitData, pChipStatusByte, 1);    
@@ -533,18 +533,18 @@ uint32_t DeviceCC1200ReadChipStatus(DeviceCC1200* pDev, uint8_t* pChipStatusByte
 @{
 */
 
-/*Чтение регистра из расширенной области памяти приёмопередатчика*/
+/*Р§С‚РµРЅРёРµ СЂРµРіРёСЃС‚СЂР° РёР· СЂР°СЃС€РёСЂРµРЅРЅРѕР№ РѕР±Р»Р°СЃС‚Рё РїР°РјСЏС‚Рё РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°*/
 static uint32_t prvDeviceCC1200ReadExtendedRegister(DeviceCC1200* pDev, uint8_t AddrReg, 
                                                     uint8_t* pValueReg, uint8_t* pStatusByte, 
                                                     ExtCodeDeviceCC1200* pExCode)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pDev || !pValueReg || !pExCode)
     return FUNC_INVALID_PARAM;
   
   *pExCode  = DEVICE_CC1200_NOT_CODE; 
   
-  /*Чтение данных*/
+  /*Р§С‚РµРЅРёРµ РґР°РЅРЅС‹С…*/
   uint32_t Res;
   osStatus osRes;
   
@@ -579,16 +579,16 @@ static uint32_t prvDeviceCC1200ReadExtendedRegister(DeviceCC1200* pDev, uint8_t 
   return FUNC_OK;  
 }
 
-/*Чтение байта из буфера RX*/
+/*Р§С‚РµРЅРёРµ Р±Р°Р№С‚Р° РёР· Р±СѓС„РµСЂР° RX*/
 static uint32_t prvDeviceCC1200PopRXFIFO(DeviceCC1200* pDev, uint8_t *pValue, ExtCodeDeviceCC1200* pExCode)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pDev || !pValue || !pExCode)
     return FUNC_INVALID_PARAM;
   
   *pExCode  = DEVICE_CC1200_NOT_CODE; 
   
-  /*Чтение данных*/
+  /*Р§С‚РµРЅРёРµ РґР°РЅРЅС‹С…*/
   uint32_t Res;
   osStatus osRes;
   
@@ -619,14 +619,14 @@ static uint32_t prvDeviceCC1200PopRXFIFO(DeviceCC1200* pDev, uint8_t *pValue, Ex
   return FUNC_OK;    
 }
 
-/*Запись байта в буфер TX*/
+/*Р—Р°РїРёСЃСЊ Р±Р°Р№С‚Р° РІ Р±СѓС„РµСЂ TX*/
 static uint32_t prvDeviceCC1200PushTXFIFO(DeviceCC1200* pDev, uint8_t Value, ExtCodeDeviceCC1200* pExCode)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pDev || !pExCode)
     return FUNC_INVALID_PARAM;  
   
-  /*Запись данных*/
+  /*Р—Р°РїРёСЃСЊ РґР°РЅРЅС‹С…*/
   uint32_t Res;
   osStatus osRes;
   
@@ -654,11 +654,11 @@ static uint32_t prvDeviceCC1200PushTXFIFO(DeviceCC1200* pDev, uint8_t Value, Ext
   return FUNC_OK;
 }
 
-/*Чтение регистра из стандартной области памяти приёмопередатчика*/
+/*Р§С‚РµРЅРёРµ СЂРµРіРёСЃС‚СЂР° РёР· СЃС‚Р°РЅРґР°СЂС‚РЅРѕР№ РѕР±Р»Р°СЃС‚Рё РїР°РјСЏС‚Рё РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°*/
 static uint32_t prvDeviceCC1200ReadRegister(DeviceCC1200* pDev, uint8_t AddrReg, uint8_t* pValueReg, 
                                             uint8_t* pStatusByte, ExtCodeDeviceCC1200* pExCode)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pDev || !pValueReg || !pExCode)
     return FUNC_INVALID_PARAM;
   
@@ -667,7 +667,7 @@ static uint32_t prvDeviceCC1200ReadRegister(DeviceCC1200* pDev, uint8_t AddrReg,
   if(AddrReg >= EXTENDED_ADDRESS)
     return FUNC_INVALID_PARAM;  
   
-  /*Чтение данных*/
+  /*Р§С‚РµРЅРёРµ РґР°РЅРЅС‹С…*/
   uint32_t Res;
   osStatus osRes;
   
@@ -701,16 +701,16 @@ static uint32_t prvDeviceCC1200ReadRegister(DeviceCC1200* pDev, uint8_t AddrReg,
   return FUNC_OK;  
 }
 
-/*Запись регистра из расширенной области памяти приёмопередатчика*/
+/*Р—Р°РїРёСЃСЊ СЂРµРіРёСЃС‚СЂР° РёР· СЂР°СЃС€РёСЂРµРЅРЅРѕР№ РѕР±Р»Р°СЃС‚Рё РїР°РјСЏС‚Рё РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°*/
 static uint32_t prvDeviceCC1200WriteExtendedRegister(DeviceCC1200* pDev, uint8_t AddrReg, uint8_t ValueReg, ExtCodeDeviceCC1200* pExCode)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pDev || !pExCode)
     return FUNC_INVALID_PARAM;
   
   *pExCode  = DEVICE_CC1200_NOT_CODE; 
   
-  /*Передача данных*/
+  /*РџРµСЂРµРґР°С‡Р° РґР°РЅРЅС‹С…*/
   uint32_t Res;
   osStatus osRes;
     
@@ -737,7 +737,7 @@ static uint32_t prvDeviceCC1200WriteExtendedRegister(DeviceCC1200* pDev, uint8_t
     return FUNC_ERROR;    
   }  
   
-  /*Верификация данных*/
+  /*Р’РµСЂРёС„РёРєР°С†РёСЏ РґР°РЅРЅС‹С…*/
   Res = prvDeviceCC1200ReadExtendedRegister(pDev, AddrReg, &VerifyData, NULL, pExCode);
   
   if(Res != FUNC_OK)
@@ -752,10 +752,10 @@ static uint32_t prvDeviceCC1200WriteExtendedRegister(DeviceCC1200* pDev, uint8_t
   return FUNC_OK;  
 }
 
-/*Запись регистра из стандартной области памяти приёмопередатчика*/
+/*Р—Р°РїРёСЃСЊ СЂРµРіРёСЃС‚СЂР° РёР· СЃС‚Р°РЅРґР°СЂС‚РЅРѕР№ РѕР±Р»Р°СЃС‚Рё РїР°РјСЏС‚Рё РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°*/
 static uint32_t prvDeviceCC1200WriteRegister(DeviceCC1200* pDev, uint8_t AddrReg, uint8_t ValueReg, ExtCodeDeviceCC1200* pExCode)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pDev || !pExCode)
     return FUNC_INVALID_PARAM;
   
@@ -764,7 +764,7 @@ static uint32_t prvDeviceCC1200WriteRegister(DeviceCC1200* pDev, uint8_t AddrReg
   if(AddrReg >= EXTENDED_ADDRESS)
     return FUNC_INVALID_PARAM;
   
-  /*Передача данных*/
+  /*РџРµСЂРµРґР°С‡Р° РґР°РЅРЅС‹С…*/
   uint32_t Res;
   osStatus osRes;
   
@@ -790,7 +790,7 @@ static uint32_t prvDeviceCC1200WriteRegister(DeviceCC1200* pDev, uint8_t AddrReg
     return FUNC_ERROR;    
   }  
   
-  /*Верификация данных*/
+  /*Р’РµСЂРёС„РёРєР°С†РёСЏ РґР°РЅРЅС‹С…*/
   Res = prvDeviceCC1200ReadRegister(pDev, AddrReg, &VerifyData, NULL, pExCode);
 
   if(Res != FUNC_OK)
@@ -805,16 +805,16 @@ static uint32_t prvDeviceCC1200WriteRegister(DeviceCC1200* pDev, uint8_t AddrReg
   return FUNC_OK;
 }
 
-/*Установка режима приёмопередатчика*/
+/*РЈСЃС‚Р°РЅРѕРІРєР° СЂРµР¶РёРјР° РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°*/
 static uint32_t prvDeviceCC1200SetMode(DeviceCC1200* pDev, DeviceCC1200Mode DevMode, ExtCodeDeviceCC1200* pExCode)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pDev || !pExCode)
     return FUNC_INVALID_PARAM;
   
   *pExCode  = DEVICE_CC1200_NOT_CODE; 
   
-  /*Установка режима приёмопередатчика*/
+  /*РЈСЃС‚Р°РЅРѕРІРєР° СЂРµР¶РёРјР° РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°*/
   uint32_t Res;
   
   if(DevMode == DEVICE_CC1200_TRANSMIT)
@@ -835,10 +835,10 @@ static uint32_t prvDeviceCC1200SetMode(DeviceCC1200* pDev, DeviceCC1200Mode DevM
   return FUNC_OK;
 }
 
-/*Функция ожидания готовности приёмопередатчика*/
+/*Р¤СѓРЅРєС†РёСЏ РѕР¶РёРґР°РЅРёСЏ РіРѕС‚РѕРІРЅРѕСЃС‚Рё РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°*/
 static uint32_t prvDeviceCC1200WaitStausByte(DeviceCC1200* pDev, ExtCodeDeviceCC1200* pExCode, uint32_t Timeout)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pDev || !pExCode)
     return FUNC_INVALID_PARAM;
   
@@ -848,7 +848,7 @@ static uint32_t prvDeviceCC1200WaitStausByte(DeviceCC1200* pDev, ExtCodeDeviceCC
   uint32_t WaitTick = Timeout;
   uint8_t ChipStatusByte;
   
-  /*Ожидание готовности приёмопередатчика*/
+  /*РћР¶РёРґР°РЅРёРµ РіРѕС‚РѕРІРЅРѕСЃС‚Рё РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°*/
   while(TRUE)
   {
     Res = DeviceCC1200ReadChipStatus(pDev, &ChipStatusByte, pExCode);
@@ -872,17 +872,17 @@ static uint32_t prvDeviceCC1200WaitStausByte(DeviceCC1200* pDev, ExtCodeDeviceCC
   return FUNC_OK;
 }
 
-/*Очистка буфера RX*/
+/*РћС‡РёСЃС‚РєР° Р±СѓС„РµСЂР° RX*/
 static uint32_t prvDeviceCC1200FlushRXFIFO(DeviceCC1200* pDev, ExtCodeDeviceCC1200* pExCode)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pDev || !pExCode)
     return FUNC_INVALID_PARAM;
   
   *pExCode  = DEVICE_CC1200_NOT_CODE; 
   uint32_t Res;  
 
-  /*Очистка буфера RX*/   
+  /*РћС‡РёСЃС‚РєР° Р±СѓС„РµСЂР° RX*/   
   Res = prvDeviceCC1200CommandStrobes(pDev, SFRX, pExCode);
   
   if(Res != FUNC_OK)
@@ -891,7 +891,7 @@ static uint32_t prvDeviceCC1200FlushRXFIFO(DeviceCC1200* pDev, ExtCodeDeviceCC12
   return FUNC_OK;     
 }
            
-/** @name Значения конфигурационных регистров по умолчанию
+/** @name Р—РЅР°С‡РµРЅРёСЏ РєРѕРЅС„РёРіСѓСЂР°С†РёРѕРЅРЅС‹С… СЂРµРіРёСЃС‚СЂРѕРІ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 */                        
 ///@{
 #define DEF_SYNC_CFG1                   0xA8
@@ -941,14 +941,14 @@ static uint32_t prvDeviceCC1200FlushRXFIFO(DeviceCC1200* pDev, ExtCodeDeviceCC12
 #define DEF_XOSC1                       0x03
 ///@}
 
-/*Установка параметров приёмопередатчика по умолчанию*/
+/*РЈСЃС‚Р°РЅРѕРІРєР° РїР°СЂР°РјРµС‚СЂРѕРІ РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР° РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ*/
 static uint32_t prvDeviceCC1200SetDefsParams(DeviceCC1200* pDev, ExtCodeDeviceCC1200* pExCode)
 {  
-  /*Проверка входных параметров*/  
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/  
   if(!pDev || !pExCode)
     return FUNC_INVALID_PARAM;  
 
-  /*Конфигурация регистров из стандартной области памяти*/
+  /*РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ СЂРµРіРёСЃС‚СЂРѕРІ РёР· СЃС‚Р°РЅРґР°СЂС‚РЅРѕР№ РѕР±Р»Р°СЃС‚Рё РїР°РјСЏС‚Рё*/
   uint32_t Res;
 
   Res = prvDeviceCC1200WriteRegister(pDev, DEV_ADDR, pDev->DevAddr, pExCode);  
@@ -1096,7 +1096,7 @@ static uint32_t prvDeviceCC1200SetDefsParams(DeviceCC1200* pDev, ExtCodeDeviceCC
   if(Res != FUNC_OK)
     return Res;  
   
-  /*Конфигурация регистров из расширенной области памяти*/
+  /*РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ СЂРµРіРёСЃС‚СЂРѕРІ РёР· СЂР°СЃС€РёСЂРµРЅРЅРѕР№ РѕР±Р»Р°СЃС‚Рё РїР°РјСЏС‚Рё*/
     
   Res = prvDeviceCC1200WriteExtendedRegister(pDev, IF_MIX_CFG, DEF_IF_MIX_CFG, pExCode); 
   
@@ -1181,7 +1181,7 @@ static uint32_t prvDeviceCC1200SetDefsParams(DeviceCC1200* pDev, ExtCodeDeviceCC
   return FUNC_OK;
 }
 
-/*Установка команды для приёмопередатчика*/
+/*РЈСЃС‚Р°РЅРѕРІРєР° РєРѕРјР°РЅРґС‹ РґР»СЏ РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‚С‡РёРєР°*/
 static uint32_t prvDeviceCC1200CommandStrobes(DeviceCC1200* pDev, uint8_t AddressCmd, ExtCodeDeviceCC1200* pExCode)
 {
   /*Check input parameters*/  
@@ -1211,8 +1211,8 @@ static uint32_t prvDeviceCC1200CommandStrobes(DeviceCC1200* pDev, uint8_t Addres
   return FUNC_OK;
 }
 
-/**Обработчик прерывания SPI на окончание передачи
-  \param[in] hspi указатель на структуру драйвера SPI
+/**РћР±СЂР°Р±РѕС‚С‡РёРє РїСЂРµСЂС‹РІР°РЅРёСЏ SPI РЅР° РѕРєРѕРЅС‡Р°РЅРёРµ РїРµСЂРµРґР°С‡Рё
+  \param[in] hspi СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР° SPI
 */ 
 void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
 {
@@ -1231,8 +1231,8 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi)
   return;  
 }
 
-/**Обработчик прерывания SPI на окончание приёмопередачи
-  \param[in] hspi указатель на структуру драйвера SPI
+/**РћР±СЂР°Р±РѕС‚С‡РёРє РїСЂРµСЂС‹РІР°РЅРёСЏ SPI РЅР° РѕРєРѕРЅС‡Р°РЅРёРµ РїСЂРёС‘РјРѕРїРµСЂРµРґР°С‡Рё
+  \param[in] hspi СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР° SPI
 */ 
 void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
 {

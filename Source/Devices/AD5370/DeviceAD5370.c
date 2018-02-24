@@ -1,6 +1,6 @@
 /**
   \file    DeviceAD5370.c 
-  \brief   Исполняемый файл драйвера ЦАП AD5370
+  \brief   РСЃРїРѕР»РЅСЏРµРјС‹Р№ С„Р°Р№Р» РґСЂР°Р№РІРµСЂР° Р¦РђРџ AD5370
   \author  JavaLandau
   \version 1.0
   \date    20.12.2017 
@@ -15,165 +15,165 @@
 #include "GPIOfun.h"
 
 /**
-  \defgroup module_service_AD5370 Служебные функции для работы с AD5370
-  \brief Модуль служебных функций, необходимых для работы с микросхемой ЦАП AD5370
+  \defgroup module_service_AD5370 РЎР»СѓР¶РµР±РЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ AD5370
+  \brief РњРѕРґСѓР»СЊ СЃР»СѓР¶РµР±РЅС‹С… С„СѓРЅРєС†РёР№, РЅРµРѕР±С…РѕРґРёРјС‹С… РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РјРёРєСЂРѕСЃС…РµРјРѕР№ Р¦РђРџ AD5370
 @{
 */
 
-#define OS_WAIT_FOR_RESET               1               ///<Время задержки для формирования импульса Reset
+#define OS_WAIT_FOR_RESET               1               ///<Р’СЂРµРјСЏ Р·Р°РґРµСЂР¶РєРё РґР»СЏ С„РѕСЂРјРёСЂРѕРІР°РЅРёСЏ РёРјРїСѓР»СЊСЃР° Reset
 
-#define LENGTH_PACKET                   3               ///<Длина посылки
+#define LENGTH_PACKET                   3               ///<Р”Р»РёРЅР° РїРѕСЃС‹Р»РєРё
 
-#define OS_TIME_WAIT_SPI                100             ///<Максимальное время ожидания окончания передачи/приема по SPI
+#define OS_TIME_WAIT_SPI                100             ///<РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ РІСЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РѕРєРѕРЅС‡Р°РЅРёСЏ РїРµСЂРµРґР°С‡Рё/РїСЂРёРµРјР° РїРѕ SPI
 
-#define NUM_DAC_GROUPS                  5               ///<Количество групп каналов ЦАП
-#define NUM_DAC_CHANNELS                8               ///<Количество каналов в группе
+#define NUM_DAC_GROUPS                  5               ///<РљРѕР»РёС‡РµСЃС‚РІРѕ РіСЂСѓРїРї РєР°РЅР°Р»РѕРІ Р¦РђРџ
+#define NUM_DAC_CHANNELS                8               ///<РљРѕР»РёС‡РµСЃС‚РІРѕ РєР°РЅР°Р»РѕРІ РІ РіСЂСѓРїРїРµ
 
-/** @name Константы задающие режим общения с ЦАП
+/** @name РљРѕРЅСЃС‚Р°РЅС‚С‹ Р·Р°РґР°СЋС‰РёРµ СЂРµР¶РёРј РѕР±С‰РµРЅРёСЏ СЃ Р¦РђРџ
 */                        
 ///@{
-#define MODE_SPECIAL                    0x00            ///<Специальный режим, определяемый другими байтами посылки
-#define MODE_WRITE_X_REG                0xC0            ///<Запись в регистр X1A или X1B
-#define MODE_WRITE_C_REG                0x80            ///<Запись в регистр C
-#define MODE_WRITE_M_REG                0x40            ///<Запись в регистр M
+#define MODE_SPECIAL                    0x00            ///<РЎРїРµС†РёР°Р»СЊРЅС‹Р№ СЂРµР¶РёРј, РѕРїСЂРµРґРµР»СЏРµРјС‹Р№ РґСЂСѓРіРёРјРё Р±Р°Р№С‚Р°РјРё РїРѕСЃС‹Р»РєРё
+#define MODE_WRITE_X_REG                0xC0            ///<Р—Р°РїРёСЃСЊ РІ СЂРµРіРёСЃС‚СЂ X1A РёР»Рё X1B
+#define MODE_WRITE_C_REG                0x80            ///<Р—Р°РїРёСЃСЊ РІ СЂРµРіРёСЃС‚СЂ C
+#define MODE_WRITE_M_REG                0x40            ///<Р—Р°РїРёСЃСЊ РІ СЂРµРіРёСЃС‚СЂ M
 ///@}
 
-/** @name Константы адресации каналов ЦАП внутри группы
+/** @name РљРѕРЅСЃС‚Р°РЅС‚С‹ Р°РґСЂРµСЃР°С†РёРё РєР°РЅР°Р»РѕРІ Р¦РђРџ РІРЅСѓС‚СЂРё РіСЂСѓРїРїС‹
 */                        
 ///@{
-#define CHANNEL_0                       0x00            ///<Канал 1
-#define CHANNEL_1                       0x01            ///<Канал 2
-#define CHANNEL_2                       0x02            ///<Канал 3
-#define CHANNEL_3                       0x03            ///<Канал 4
-#define CHANNEL_4                       0x04            ///<Канал 5
-#define CHANNEL_5                       0x05            ///<Канал 6
-#define CHANNEL_6                       0x06            ///<Канал 7
-#define CHANNEL_7                       0x07            ///<Канал 8
+#define CHANNEL_0                       0x00            ///<РљР°РЅР°Р» 1
+#define CHANNEL_1                       0x01            ///<РљР°РЅР°Р» 2
+#define CHANNEL_2                       0x02            ///<РљР°РЅР°Р» 3
+#define CHANNEL_3                       0x03            ///<РљР°РЅР°Р» 4
+#define CHANNEL_4                       0x04            ///<РљР°РЅР°Р» 5
+#define CHANNEL_5                       0x05            ///<РљР°РЅР°Р» 6
+#define CHANNEL_6                       0x06            ///<РљР°РЅР°Р» 7
+#define CHANNEL_7                       0x07            ///<РљР°РЅР°Р» 8
 ///@}
 
-/** @name Константы адресации групп каналов ЦАП
+/** @name РљРѕРЅСЃС‚Р°РЅС‚С‹ Р°РґСЂРµСЃР°С†РёРё РіСЂСѓРїРї РєР°РЅР°Р»РѕРІ Р¦РђРџ
 */                        
 ///@{
-#define GROUP_0                         0x08            ///<Группа 1
-#define GROUP_1                         0x10            ///<Группа 2
-#define GROUP_2                         0x18            ///<Группа 3
-#define GROUP_3                         0x20            ///<Группа 4
-#define GROUP_4                         0x28            ///<Группа 5
-#define ALL_GROUPS                      0x30            ///<Все группы
-#define GROUP_1234                      0x38            ///<Группы с 1-й по 4-ю
+#define GROUP_0                         0x08            ///<Р“СЂСѓРїРїР° 1
+#define GROUP_1                         0x10            ///<Р“СЂСѓРїРїР° 2
+#define GROUP_2                         0x18            ///<Р“СЂСѓРїРїР° 3
+#define GROUP_3                         0x20            ///<Р“СЂСѓРїРїР° 4
+#define GROUP_4                         0x28            ///<Р“СЂСѓРїРїР° 5
+#define ALL_GROUPS                      0x30            ///<Р’СЃРµ РіСЂСѓРїРїС‹
+#define GROUP_1234                      0x38            ///<Р“СЂСѓРїРїС‹ СЃ 1-Р№ РїРѕ 4-СЋ
 ///@}
 
-/** @name Константы адресации групп каналов и каналов в группе ЦАП
+/** @name РљРѕРЅСЃС‚Р°РЅС‚С‹ Р°РґСЂРµСЃР°С†РёРё РіСЂСѓРїРї РєР°РЅР°Р»РѕРІ Рё РєР°РЅР°Р»РѕРІ РІ РіСЂСѓРїРїРµ Р¦РђРџ
 */                        
 ///@{
-#define ALL_GROUPS_ALL_CHANNELS         CHANNEL_0       ///<Все группы и каналы
-#define GROUP_0_ALL_CHANNELS            CHANNEL_1       ///<Все каналы гуппы 1
-#define GROUP_1_ALL_CHANNELS            CHANNEL_2       ///<Все каналы гуппы 2
-#define GROUP_2_ALL_CHANNELS            CHANNEL_3       ///<Все каналы гуппы 3
-#define GROUP_3_ALL_CHANNELS            CHANNEL_4       ///<Все каналы гуппы 4
-#define GROUP_4_ALL_CHANNELS            CHANNEL_5       ///<Все каналы гуппы 5
+#define ALL_GROUPS_ALL_CHANNELS         CHANNEL_0       ///<Р’СЃРµ РіСЂСѓРїРїС‹ Рё РєР°РЅР°Р»С‹
+#define GROUP_0_ALL_CHANNELS            CHANNEL_1       ///<Р’СЃРµ РєР°РЅР°Р»С‹ РіСѓРїРїС‹ 1
+#define GROUP_1_ALL_CHANNELS            CHANNEL_2       ///<Р’СЃРµ РєР°РЅР°Р»С‹ РіСѓРїРїС‹ 2
+#define GROUP_2_ALL_CHANNELS            CHANNEL_3       ///<Р’СЃРµ РєР°РЅР°Р»С‹ РіСѓРїРїС‹ 3
+#define GROUP_3_ALL_CHANNELS            CHANNEL_4       ///<Р’СЃРµ РєР°РЅР°Р»С‹ РіСѓРїРїС‹ 4
+#define GROUP_4_ALL_CHANNELS            CHANNEL_5       ///<Р’СЃРµ РєР°РЅР°Р»С‹ РіСѓРїРїС‹ 5
 ///@}
 
-///Адресация канала в режиме Readback
+///РђРґСЂРµСЃР°С†РёСЏ РєР°РЅР°Р»Р° РІ СЂРµР¶РёРјРµ Readback
 #define READBACK_CHANNEL(CHANNEL)       ((0x8 + (CHANNEL)) << 0x7)
 
-///Время ожидания выполнения операций устройством ЦАП
+///Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ РѕРїРµСЂР°С†РёР№ СѓСЃС‚СЂРѕР№СЃС‚РІРѕРј Р¦РђРџ
 #define SPI_TIME_WAITING                100
 
-///Перечисление специальных кодов, задающих режим работы ЦАП AD5370 в случае @ref MODE_SPECIAL
+///РџРµСЂРµС‡РёСЃР»РµРЅРёРµ СЃРїРµС†РёР°Р»СЊРЅС‹С… РєРѕРґРѕРІ, Р·Р°РґР°СЋС‰РёС… СЂРµР¶РёРј СЂР°Р±РѕС‚С‹ Р¦РђРџ AD5370 РІ СЃР»СѓС‡Р°Рµ @ref MODE_SPECIAL
 typedef enum _DeviceAD5370SpecialCode {
-  SPEC_NOP                        = 0x0,                ///<Пустая операция
-  SPEC_CTRL_REG                   = 0x1,                ///<Запись в регистр Control
-  SPEC_OFS0_REG                   = 0x2,                ///<Запись в регистр OFS0
-  SPEC_OFS1_REG                   = 0x3,                ///<Запись в регистр OFS1
-  SPEC_READBACK                   = 0x5,                ///<Выбор регистра для чтения
-  SPEC_SELECT_AB_REG_0            = 0x6,                ///<Запись данных в регистр \f$\overline{A}\backslash B\f$ Select 0
-  SPEC_SELECT_AB_REG_1            = 0x7,                ///<Запись данных в регистр \f$\overline{A}\backslash B\f$ Select 1
-  SPEC_SELECT_AB_REG_2            = 0x8,                ///<Запись данных в регистр \f$\overline{A}\backslash B\f$ Select 2
-  SPEC_SELECT_AB_REG_3            = 0x9,                ///<Запись данных в регистр \f$\overline{A}\backslash B\f$ Select 3
-  SPEC_SELECT_AB_REG_4            = 0xA,                ///<Запись данных в регистр \f$\overline{A}\backslash B\f$ Select 4
-  SPEC_SELECT_AB_BLOCK_REG        = 0xB                 ///<Блочная запись данных в регистры \f$\overline{A}\backslash B\f$ Select 
+  SPEC_NOP                        = 0x0,                ///<РџСѓСЃС‚Р°СЏ РѕРїРµСЂР°С†РёСЏ
+  SPEC_CTRL_REG                   = 0x1,                ///<Р—Р°РїРёСЃСЊ РІ СЂРµРіРёСЃС‚СЂ Control
+  SPEC_OFS0_REG                   = 0x2,                ///<Р—Р°РїРёСЃСЊ РІ СЂРµРіРёСЃС‚СЂ OFS0
+  SPEC_OFS1_REG                   = 0x3,                ///<Р—Р°РїРёСЃСЊ РІ СЂРµРіРёСЃС‚СЂ OFS1
+  SPEC_READBACK                   = 0x5,                ///<Р’С‹Р±РѕСЂ СЂРµРіРёСЃС‚СЂР° РґР»СЏ С‡С‚РµРЅРёСЏ
+  SPEC_SELECT_AB_REG_0            = 0x6,                ///<Р—Р°РїРёСЃСЊ РґР°РЅРЅС‹С… РІ СЂРµРіРёСЃС‚СЂ \f$\overline{A}\backslash B\f$ Select 0
+  SPEC_SELECT_AB_REG_1            = 0x7,                ///<Р—Р°РїРёСЃСЊ РґР°РЅРЅС‹С… РІ СЂРµРіРёСЃС‚СЂ \f$\overline{A}\backslash B\f$ Select 1
+  SPEC_SELECT_AB_REG_2            = 0x8,                ///<Р—Р°РїРёСЃСЊ РґР°РЅРЅС‹С… РІ СЂРµРіРёСЃС‚СЂ \f$\overline{A}\backslash B\f$ Select 2
+  SPEC_SELECT_AB_REG_3            = 0x9,                ///<Р—Р°РїРёСЃСЊ РґР°РЅРЅС‹С… РІ СЂРµРіРёСЃС‚СЂ \f$\overline{A}\backslash B\f$ Select 3
+  SPEC_SELECT_AB_REG_4            = 0xA,                ///<Р—Р°РїРёСЃСЊ РґР°РЅРЅС‹С… РІ СЂРµРіРёСЃС‚СЂ \f$\overline{A}\backslash B\f$ Select 4
+  SPEC_SELECT_AB_BLOCK_REG        = 0xB                 ///<Р‘Р»РѕС‡РЅР°СЏ Р·Р°РїРёСЃСЊ РґР°РЅРЅС‹С… РІ СЂРµРіРёСЃС‚СЂС‹ \f$\overline{A}\backslash B\f$ Select 
 } DeviceAD5370SpecialCode;
 
 
-///Перечисление кодов выбора регистров ЦАП AD5370 для чтения в случае @ref SPEC_READBACK
+///РџРµСЂРµС‡РёСЃР»РµРЅРёРµ РєРѕРґРѕРІ РІС‹Р±РѕСЂР° СЂРµРіРёСЃС‚СЂРѕРІ Р¦РђРџ AD5370 РґР»СЏ С‡С‚РµРЅРёСЏ РІ СЃР»СѓС‡Р°Рµ @ref SPEC_READBACK
 typedef enum _DeviceAD5370ReadbackRegisters {
-  READBACK_X1A_REG                = 0x0000,             ///<Чтение регистра X1A
-  READBACK_X1B_REG                = 0x2000,             ///<Чтение регистра X1B
-  READBACK_C_REG                  = 0x4000,             ///<Чтение регистра C
-  READBACK_M_REG                  = 0x6000,             ///<Чтение регистра M
-  READBACK_CTRL_REG               = 0x8080,             ///<Чтение регистра Control
-  READBACK_OFS0_REG               = 0x8100,             ///<Чтение регистра OFS0
-  READBACK_OFS1_REG               = 0x8180,             ///<Чтение регистра OFS1
-  READBACK_SELECT_AB_0_REG        = 0x8300,             ///<Чтение регистра \f$\overline{A}\backslash B\f$ Select 0
-  READBACK_SELECT_AB_1_REG        = 0x8380,             ///<Чтение регистра \f$\overline{A}\backslash B\f$ Select 1        
-  READBACK_SELECT_AB_2_REG        = 0x8400,             ///<Чтение регистра \f$\overline{A}\backslash B\f$ Select 2
-  READBACK_SELECT_AB_3_REG        = 0x8480,             ///<Чтение регистра \f$\overline{A}\backslash B\f$ Select 3
-  READBACK_SELECT_AB_4_REG        = 0x8500              ///<Чтение регистра \f$\overline{A}\backslash B\f$ Select 4
+  READBACK_X1A_REG                = 0x0000,             ///<Р§С‚РµРЅРёРµ СЂРµРіРёСЃС‚СЂР° X1A
+  READBACK_X1B_REG                = 0x2000,             ///<Р§С‚РµРЅРёРµ СЂРµРіРёСЃС‚СЂР° X1B
+  READBACK_C_REG                  = 0x4000,             ///<Р§С‚РµРЅРёРµ СЂРµРіРёСЃС‚СЂР° C
+  READBACK_M_REG                  = 0x6000,             ///<Р§С‚РµРЅРёРµ СЂРµРіРёСЃС‚СЂР° M
+  READBACK_CTRL_REG               = 0x8080,             ///<Р§С‚РµРЅРёРµ СЂРµРіРёСЃС‚СЂР° Control
+  READBACK_OFS0_REG               = 0x8100,             ///<Р§С‚РµРЅРёРµ СЂРµРіРёСЃС‚СЂР° OFS0
+  READBACK_OFS1_REG               = 0x8180,             ///<Р§С‚РµРЅРёРµ СЂРµРіРёСЃС‚СЂР° OFS1
+  READBACK_SELECT_AB_0_REG        = 0x8300,             ///<Р§С‚РµРЅРёРµ СЂРµРіРёСЃС‚СЂР° \f$\overline{A}\backslash B\f$ Select 0
+  READBACK_SELECT_AB_1_REG        = 0x8380,             ///<Р§С‚РµРЅРёРµ СЂРµРіРёСЃС‚СЂР° \f$\overline{A}\backslash B\f$ Select 1        
+  READBACK_SELECT_AB_2_REG        = 0x8400,             ///<Р§С‚РµРЅРёРµ СЂРµРіРёСЃС‚СЂР° \f$\overline{A}\backslash B\f$ Select 2
+  READBACK_SELECT_AB_3_REG        = 0x8480,             ///<Р§С‚РµРЅРёРµ СЂРµРіРёСЃС‚СЂР° \f$\overline{A}\backslash B\f$ Select 3
+  READBACK_SELECT_AB_4_REG        = 0x8500              ///<Р§С‚РµРЅРёРµ СЂРµРіРёСЃС‚СЂР° \f$\overline{A}\backslash B\f$ Select 4
 } DeviceAD5370ReadbackRegisters;
 
-///Задержка в несколько микросекунд для выполнения операций устройством ЦАП
+///Р—Р°РґРµСЂР¶РєР° РІ РЅРµСЃРєРѕР»СЊРєРѕ РјРёРєСЂРѕСЃРµРєСѓРЅРґ РґР»СЏ РІС‹РїРѕР»РЅРµРЅРёСЏ РѕРїРµСЂР°С†РёР№ СѓСЃС‚СЂРѕР№СЃС‚РІРѕРј Р¦РђРџ
 #define SPI_WAITING() for(uint8_t SPIIncrement = 0; SPIIncrement < SPI_TIME_WAITING; SPIIncrement++) asm("NOP");
 
-/**Получение кода выбора регистра для чтения
-  \param[in] DevSpecCode код режима работы ЦАП
-  \return Код выбора регистра для чтения
+/**РџРѕР»СѓС‡РµРЅРёРµ РєРѕРґР° РІС‹Р±РѕСЂР° СЂРµРіРёСЃС‚СЂР° РґР»СЏ С‡С‚РµРЅРёСЏ
+  \param[in] DevSpecCode РєРѕРґ СЂРµР¶РёРјР° СЂР°Р±РѕС‚С‹ Р¦РђРџ
+  \return РљРѕРґ РІС‹Р±РѕСЂР° СЂРµРіРёСЃС‚СЂР° РґР»СЏ С‡С‚РµРЅРёСЏ
 */ 
 static DeviceAD5370ReadbackRegisters prvGetCodeReadbackRegister(DeviceAD5370SpecialCode DevSpecCode);
 
-/**Запись в регистр ЦАП
-  \param[in] pDev указатель на структуру драйвера
-  \param[in] WriteReg данные для записи в регистр
-  \param[in] DevSpecCode код режима работы ЦАП для выбора регистра для записи
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**Р—Р°РїРёСЃСЊ РІ СЂРµРіРёСЃС‚СЂ Р¦РђРџ
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[in] WriteReg РґР°РЅРЅС‹Рµ РґР»СЏ Р·Р°РїРёСЃРё РІ СЂРµРіРёСЃС‚СЂ
+  \param[in] DevSpecCode РєРѕРґ СЂРµР¶РёРјР° СЂР°Р±РѕС‚С‹ Р¦РђРџ РґР»СЏ РІС‹Р±РѕСЂР° СЂРµРіРёСЃС‚СЂР° РґР»СЏ Р·Р°РїРёСЃРё
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */ 
 static uint32_t prvDeviceAD5370WriteRegister(DeviceAD5370* pDev, uint16_t WriteReg, 
                                              DeviceAD5370SpecialCode DevSpecCode, ExtCodeDeviceAD5370* pExCode);
 
-/**Чтение регистра ЦАП
-  \param[in] pDev указатель на структуру драйвера
-  \param[in] DevReg код выбора регистра для чтения
-  \param[in] NumChannel код выбора номера канала для чтения
-  \param[in] pReadData считываемые данные
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**Р§С‚РµРЅРёРµ СЂРµРіРёСЃС‚СЂР° Р¦РђРџ
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[in] DevReg РєРѕРґ РІС‹Р±РѕСЂР° СЂРµРіРёСЃС‚СЂР° РґР»СЏ С‡С‚РµРЅРёСЏ
+  \param[in] NumChannel РєРѕРґ РІС‹Р±РѕСЂР° РЅРѕРјРµСЂР° РєР°РЅР°Р»Р° РґР»СЏ С‡С‚РµРЅРёСЏ
+  \param[in] pReadData СЃС‡РёС‚С‹РІР°РµРјС‹Рµ РґР°РЅРЅС‹Рµ
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */ 
 static uint32_t prvDeviceAD5370ReadRegister(DeviceAD5370* pDev, DeviceAD5370ReadbackRegisters DevReg, 
                                             uint8_t NumChannel, uint16_t* pReadData, ExtCodeDeviceAD5370* pExCode);
 
-/**Выбор всех каналов для X2A или X2B регистров
-  \param[in] pDev указатель на структуру драйвера
-  \param[in] SelectAB выбор регистра X2A или X2B
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**Р’С‹Р±РѕСЂ РІСЃРµС… РєР°РЅР°Р»РѕРІ РґР»СЏ X2A РёР»Рё X2B СЂРµРіРёСЃС‚СЂРѕРІ
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[in] SelectAB РІС‹Р±РѕСЂ СЂРµРіРёСЃС‚СЂР° X2A РёР»Рё X2B
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */ 
 static uint32_t prvDeviceAD5370BlockSelectAB(DeviceAD5370* pDev, uint8_t SelectAB, ExtCodeDeviceAD5370* pExCode);
 
-/**Установка параметров ЦАП по умолчанию
-  \param[in] pDev указатель на структуру драйвера
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**РЈСЃС‚Р°РЅРѕРІРєР° РїР°СЂР°РјРµС‚СЂРѕРІ Р¦РђРџ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */ 
 static uint32_t prvDeviceAD5370DefParams(DeviceAD5370* pDev, ExtCodeDeviceAD5370* pExCode);
 
-/**Установка значения заданного канала ЦАП
-  \param[in] pDev указатель на структуру драйвера
-  \param[in] Addr адрес канала ЦАП
-  \param[in] InitCode значение в канале ЦАП
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**РЈСЃС‚Р°РЅРѕРІРєР° Р·РЅР°С‡РµРЅРёСЏ Р·Р°РґР°РЅРЅРѕРіРѕ РєР°РЅР°Р»Р° Р¦РђРџ
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[in] Addr Р°РґСЂРµСЃ РєР°РЅР°Р»Р° Р¦РђРџ
+  \param[in] InitCode Р·РЅР°С‡РµРЅРёРµ РІ РєР°РЅР°Р»Рµ Р¦РђРџ
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */ 
 static uint32_t prvDeviceAD5370SetDACChannel(DeviceAD5370* pDev, uint16_t Addr, uint16_t InitCode, ExtCodeDeviceAD5370* pExCode);
 
 /**
 @}
-  \defgroup module_AD5370 Интерфейсные функции для работы с AD5370
-  \brief Модуль, предоставляющий пользователю необходимый функционал для работы с микросхемой ЦАП AD5370
+  \defgroup module_AD5370 РРЅС‚РµСЂС„РµР№СЃРЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ AD5370
+  \brief РњРѕРґСѓР»СЊ, РїСЂРµРґРѕСЃС‚Р°РІР»СЏСЋС‰РёР№ РїРѕР»СЊР·РѕРІР°С‚РµР»СЋ РЅРµРѕР±С…РѕРґРёРјС‹Р№ С„СѓРЅРєС†РёРѕРЅР°Р» РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РјРёРєСЂРѕСЃС…РµРјРѕР№ Р¦РђРџ AD5370
 @{
 */
 
-/*Инициализация драйвера ЦАП*/ 
+/*РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РґСЂР°Р№РІРµСЂР° Р¦РђРџ*/ 
 uint32_t DeviceAD5370Create(DeviceAD5370Param* pDevParam, DeviceAD5370* pDev, ExtCodeDeviceAD5370* pExCode)
 {  
   if(!pDevParam || !pDev || !pExCode)
@@ -192,7 +192,7 @@ uint32_t DeviceAD5370Create(DeviceAD5370Param* pDevParam, DeviceAD5370* pDev, Ex
   
   uint32_t Res;  
   
-  /*Инициализация SPI*/
+  /*РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ SPI*/
   pDev->SPIDrv.State = HAL_SPI_STATE_RESET;
   pDev->SPIDrv.Instance = pDevParam->pInstanceSPIDrv;
   pDev->SPIDrv.Init.Mode = SPI_MODE_MASTER;
@@ -220,7 +220,7 @@ uint32_t DeviceAD5370Create(DeviceAD5370Param* pDevParam, DeviceAD5370* pDev, Ex
   pDev->pGPIOResetPort = NULL;
   pDev->pGPIOSyncPort = NULL;
     
-  /*Инициализация GPIO*/
+  /*РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ GPIO*/
   /*Pin SYNC*/
   GPIO_InitTypeDef GPIO_InitStruct;
   
@@ -306,13 +306,13 @@ uint32_t DeviceAD5370Create(DeviceAD5370Param* pDevParam, DeviceAD5370* pDev, Ex
   if(Res != FUNC_OK)
     return Res;
   
-  /*Установка параметров по умолчанию*/
+  /*РЈСЃС‚Р°РЅРѕРІРєР° РїР°СЂР°РјРµС‚СЂРѕРІ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ*/
   Res = prvDeviceAD5370DefParams(pDev, pExCode);    
     
   return Res;  
 }
 
-/*Перезагрузка ЦАП*/
+/*РџРµСЂРµР·Р°РіСЂСѓР·РєР° Р¦РђРџ*/
 uint32_t DeviceAD5370Reset(DeviceAD5370* pDev)
 {
   if(!pDev)
@@ -321,28 +321,28 @@ uint32_t DeviceAD5370Reset(DeviceAD5370* pDev)
   if(!pDev->pGPIOResetPort)
     return FUNC_INVALID_PARAM;    
   
-  /*Имульс Reset*/
+  /*РРјСѓР»СЊСЃ Reset*/
   HAL_GPIO_WritePin(pDev->pGPIOResetPort, pDev->GPIOResetNum, GPIO_PIN_RESET);
   osDelay(OS_WAIT_FOR_RESET);
   HAL_GPIO_WritePin(pDev->pGPIOResetPort, pDev->GPIOResetNum, GPIO_PIN_SET);
   
-  /*Ожидание перезагрузки устройства*/                         
+  /*РћР¶РёРґР°РЅРёРµ РїРµСЂРµР·Р°РіСЂСѓР·РєРё СѓСЃС‚СЂРѕР№СЃС‚РІР°*/                         
   osDelay(OS_WAIT_FOR_RESET);                   
     
   return FUNC_OK;                    
 }
 
-/*Установка всех каналов ЦАП*/ 
+/*РЈСЃС‚Р°РЅРѕРІРєР° РІСЃРµС… РєР°РЅР°Р»РѕРІ Р¦РђРџ*/ 
 uint32_t DeviceAD5370SetAllChannels(DeviceAD5370* pDev, uint16_t* pOutput, ExtCodeDeviceAD5370* pExCode)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pDev || !pOutput || !pExCode)
     return FUNC_INVALID_PARAM;  
   
   uint32_t Res;
   *pExCode = DEVICE_AD5370_NOT_CODE;
   
-  /*Установка каналов*/
+  /*РЈСЃС‚Р°РЅРѕРІРєР° РєР°РЅР°Р»РѕРІ*/
   for(uint8_t i = 0; i < NUM_DAC_GROUPS; i++)
   {
     for(uint8_t j = 0; j < NUM_DAC_CHANNELS; j++)
@@ -356,10 +356,10 @@ uint32_t DeviceAD5370SetAllChannels(DeviceAD5370* pDev, uint16_t* pOutput, ExtCo
   return FUNC_OK;
 }
 
-/*Установка заданного канала ЦАП*/
+/*РЈСЃС‚Р°РЅРѕРІРєР° Р·Р°РґР°РЅРЅРѕРіРѕ РєР°РЅР°Р»Р° Р¦РђРџ*/
 uint32_t DeviceAD5370SetOneChannel(DeviceAD5370* pDev, uint16_t ValueChannel, uint8_t NumChannel, ExtCodeDeviceAD5370* pExCode)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pDev || !pExCode)
     return FUNC_INVALID_PARAM;  
 
@@ -369,7 +369,7 @@ uint32_t DeviceAD5370SetOneChannel(DeviceAD5370* pDev, uint16_t ValueChannel, ui
   uint32_t Res;
   *pExCode = DEVICE_AD5370_NOT_CODE;
 
-  /*Установка канала*/
+  /*РЈСЃС‚Р°РЅРѕРІРєР° РєР°РЅР°Р»Р°*/
   uint8_t NumDACGroup = NumChannel / NUM_DAC_CHANNELS;
   uint8_t NumDACChannel = NumChannel - NUM_DAC_CHANNELS*NumDACGroup;
   
@@ -382,30 +382,30 @@ uint32_t DeviceAD5370SetOneChannel(DeviceAD5370* pDev, uint16_t ValueChannel, ui
 @}
 */
 
-/*Установка параметров ЦАП по умолчанию*/
+/*РЈСЃС‚Р°РЅРѕРІРєР° РїР°СЂР°РјРµС‚СЂРѕРІ Р¦РђРџ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ*/
 static uint32_t prvDeviceAD5370DefParams(DeviceAD5370* pDev, ExtCodeDeviceAD5370* pExCode)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pDev || !pExCode)
     return FUNC_INVALID_PARAM;  
   
   uint32_t Res;
   uint16_t WriteReg;
   
-  /*Запись в регистр Control*/
+  /*Р—Р°РїРёСЃСЊ РІ СЂРµРіРёСЃС‚СЂ Control*/
   WriteReg = SOFT_POWER_UP | TEMP_SHUTDOWN_ENABLE | SELECT_A;
   Res = prvDeviceAD5370WriteRegister(pDev,  WriteReg, SPEC_CTRL_REG, pExCode);
   
   if(Res != FUNC_OK)
     return Res;
   
-  /*Установка всех каналов на регистр X2A*/
+  /*РЈСЃС‚Р°РЅРѕРІРєР° РІСЃРµС… РєР°РЅР°Р»РѕРІ РЅР° СЂРµРіРёСЃС‚СЂ X2A*/
   Res = prvDeviceAD5370BlockSelectAB(pDev, SELECT_A, pExCode);
 
   if(Res != FUNC_OK)
     return Res;
   
-  /*Установка регистра Offset*/
+  /*РЈСЃС‚Р°РЅРѕРІРєР° СЂРµРіРёСЃС‚СЂР° Offset*/
   WriteReg = 0x0;
   Res = prvDeviceAD5370WriteRegister(pDev,  WriteReg, SPEC_OFS0_REG, pExCode);
   
@@ -417,7 +417,7 @@ static uint32_t prvDeviceAD5370DefParams(DeviceAD5370* pDev, ExtCodeDeviceAD5370
   if(Res != FUNC_OK)
     return Res;    
   
-  /*Очистка всех каналов ЦАП*/
+  /*РћС‡РёСЃС‚РєР° РІСЃРµС… РєР°РЅР°Р»РѕРІ Р¦РђРџ*/
   uint16_t DACChannels[NUM_CHANNELS];  
   memset(DACChannels, 0, NUM_CHANNELS*sizeof(uint16_t));
   
@@ -426,16 +426,16 @@ static uint32_t prvDeviceAD5370DefParams(DeviceAD5370* pDev, ExtCodeDeviceAD5370
   return Res;
 }
 
-/*Установка значения заданного канала ЦАП*/
+/*РЈСЃС‚Р°РЅРѕРІРєР° Р·РЅР°С‡РµРЅРёСЏ Р·Р°РґР°РЅРЅРѕРіРѕ РєР°РЅР°Р»Р° Р¦РђРџ*/
 static uint32_t prvDeviceAD5370SetDACChannel(DeviceAD5370* pDev, uint16_t Addr, uint16_t InitCode, ExtCodeDeviceAD5370* pExCode)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pDev || !pExCode)
     return FUNC_INVALID_PARAM;  
   
   *pExCode = DEVICE_AD5370_NOT_CODE;
   
-  /*Установка канала*/
+  /*РЈСЃС‚Р°РЅРѕРІРєР° РєР°РЅР°Р»Р°*/
   HAL_StatusTypeDef HALRes;
   uint8_t WriteData[LENGTH_PACKET] = {0x0, 0x0, 0x0};
   WriteData[0] = MODE_WRITE_X_REG | Addr;
@@ -452,10 +452,10 @@ static uint32_t prvDeviceAD5370SetDACChannel(DeviceAD5370* pDev, uint16_t Addr, 
     return FUNC_ERROR;
   }      
   
-  /*Ожидание выполнения операции устройством ЦАП*/
+  /*РћР¶РёРґР°РЅРёРµ РІС‹РїРѕР»РЅРµРЅРёСЏ РѕРїРµСЂР°С†РёРё СѓСЃС‚СЂРѕР№СЃС‚РІРѕРј Р¦РђРџ*/
   while(HAL_GPIO_ReadPin(pDev->pGPIOBusyPort, pDev->GPIOBusyNum) == GPIO_PIN_RESET);
   
-  /*Установка каналов ЦАП на выход*/
+  /*РЈСЃС‚Р°РЅРѕРІРєР° РєР°РЅР°Р»РѕРІ Р¦РђРџ РЅР° РІС‹С…РѕРґ*/
   HAL_GPIO_WritePin(pDev->pGPIOLDACPort, pDev->GPIOLDACNum, GPIO_PIN_RESET);
   
   SPI_WAITING();
@@ -465,10 +465,10 @@ static uint32_t prvDeviceAD5370SetDACChannel(DeviceAD5370* pDev, uint16_t Addr, 
   return FUNC_OK;
 }
 
-/*Выбор всех каналов для X2A или X2B регистров*/
+/*Р’С‹Р±РѕСЂ РІСЃРµС… РєР°РЅР°Р»РѕРІ РґР»СЏ X2A РёР»Рё X2B СЂРµРіРёСЃС‚СЂРѕРІ*/
 static uint32_t prvDeviceAD5370BlockSelectAB(DeviceAD5370* pDev, uint8_t SelectAB, ExtCodeDeviceAD5370* pExCode)     
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pDev || !pExCode)
     return FUNC_INVALID_PARAM;  
   
@@ -477,7 +477,7 @@ static uint32_t prvDeviceAD5370BlockSelectAB(DeviceAD5370* pDev, uint8_t SelectA
   if(SelectAB != SELECT_A && SelectAB != SELECT_B)
     return FUNC_INVALID_PARAM;  
     
-  /*Формирование и отправка данных*/
+  /*Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ Рё РѕС‚РїСЂР°РІРєР° РґР°РЅРЅС‹С…*/
   uint32_t Res; 
   HAL_StatusTypeDef HALRes;
   uint8_t WriteData[LENGTH_PACKET] = {0x0, 0x0, 0x0};
@@ -496,7 +496,7 @@ static uint32_t prvDeviceAD5370BlockSelectAB(DeviceAD5370* pDev, uint8_t SelectA
     return FUNC_ERROR;
   }
     
-  /*Верификация записанных данных*/    
+  /*Р’РµСЂРёС„РёРєР°С†РёСЏ Р·Р°РїРёСЃР°РЅРЅС‹С… РґР°РЅРЅС‹С…*/    
   uint16_t ReadReg[NUM_DAC_GROUPS] = {0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF};
   Res = prvDeviceAD5370ReadRegister(pDev, READBACK_SELECT_AB_0_REG, NULL, &ReadReg[0], pExCode);
     
@@ -543,11 +543,11 @@ static uint32_t prvDeviceAD5370BlockSelectAB(DeviceAD5370* pDev, uint8_t SelectA
   return FUNC_OK;  
 }
 
-/*Чтение регистра ЦАП*/
+/*Р§С‚РµРЅРёРµ СЂРµРіРёСЃС‚СЂР° Р¦РђРџ*/
 static uint32_t prvDeviceAD5370ReadRegister(DeviceAD5370* pDev, DeviceAD5370ReadbackRegisters DevReg, 
                                             uint8_t NumChannel, uint16_t* pReadData, ExtCodeDeviceAD5370* pExCode)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pDev || !pExCode || !pReadData)
     return FUNC_INVALID_PARAM;
   
@@ -556,7 +556,7 @@ static uint32_t prvDeviceAD5370ReadRegister(DeviceAD5370* pDev, DeviceAD5370Read
   if(NumChannel > NUM_CHANNELS - 1)
     return FUNC_INVALID_PARAM;
     
-  /*Формирование и отправка данных*/
+  /*Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ Рё РѕС‚РїСЂР°РІРєР° РґР°РЅРЅС‹С…*/
   HAL_StatusTypeDef Res;
   uint8_t WriteData[LENGTH_PACKET] = {0x0, 0x0, 0x0};
   uint16_t ReadbackRegister;
@@ -587,7 +587,7 @@ static uint32_t prvDeviceAD5370ReadRegister(DeviceAD5370* pDev, DeviceAD5370Read
     return FUNC_ERROR;
   }
     
-  /*Чтение записанных данных*/    
+  /*Р§С‚РµРЅРёРµ Р·Р°РїРёСЃР°РЅРЅС‹С… РґР°РЅРЅС‹С…*/    
   uint8_t ReadData[LENGTH_PACKET] = {0xFF, 0xFF, 0xFF};
   
   WriteData[0] = (uint8_t)SPEC_NOP;
@@ -602,11 +602,11 @@ static uint32_t prvDeviceAD5370ReadRegister(DeviceAD5370* pDev, DeviceAD5370Read
   return FUNC_OK;      
 }
 
-/*Запись в регистр ЦАП*/
+/*Р—Р°РїРёСЃСЊ РІ СЂРµРіРёСЃС‚СЂ Р¦РђРџ*/
 static uint32_t prvDeviceAD5370WriteRegister(DeviceAD5370* pDev, uint16_t WriteReg, 
                                              DeviceAD5370SpecialCode DevSpecCode, ExtCodeDeviceAD5370* pExCode)
 {
-  /*Проверка входных параметров*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ*/
   if(!pDev || !pExCode)
     return FUNC_INVALID_PARAM;
   
@@ -621,7 +621,7 @@ static uint32_t prvDeviceAD5370WriteRegister(DeviceAD5370* pDev, uint16_t WriteR
   if(DevSpecCode == SPEC_OFS0_REG || DevSpecCode == SPEC_OFS1_REG)
     HAL_GPIO_WritePin(pDev->pGPIOCLRPort, pDev->GPIOCLRNum, GPIO_PIN_RESET);
       
-  /*Формирование и отправка данных*/
+  /*Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ Рё РѕС‚РїСЂР°РІРєР° РґР°РЅРЅС‹С…*/
   uint32_t Res; 
   HAL_StatusTypeDef HALRes;
   uint8_t WriteData[LENGTH_PACKET] = {0x0, 0x0, 0x0};
@@ -642,7 +642,7 @@ static uint32_t prvDeviceAD5370WriteRegister(DeviceAD5370* pDev, uint16_t WriteR
   if(DevSpecCode == SPEC_OFS0_REG || DevSpecCode == SPEC_OFS1_REG)
     HAL_GPIO_WritePin(pDev->pGPIOCLRPort, pDev->GPIOCLRNum, GPIO_PIN_SET);
     
-  /*Верификация записанных данных*/    
+  /*Р’РµСЂРёС„РёРєР°С†РёСЏ Р·Р°РїРёСЃР°РЅРЅС‹С… РґР°РЅРЅС‹С…*/    
   DeviceAD5370ReadbackRegisters DevReg;
   DevReg = prvGetCodeReadbackRegister(DevSpecCode);
     
@@ -661,7 +661,7 @@ static uint32_t prvDeviceAD5370WriteRegister(DeviceAD5370* pDev, uint16_t WriteR
   return FUNC_OK;
 }
 
-/*Получение кода выбора регистра для чтения*/
+/*РџРѕР»СѓС‡РµРЅРёРµ РєРѕРґР° РІС‹Р±РѕСЂР° СЂРµРіРёСЃС‚СЂР° РґР»СЏ С‡С‚РµРЅРёСЏ*/
 static DeviceAD5370ReadbackRegisters prvGetCodeReadbackRegister(DeviceAD5370SpecialCode DevSpecCode)
 {
   switch(DevSpecCode)

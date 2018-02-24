@@ -1,6 +1,6 @@
 /**
   \file    TIMDelay.c 
-  \brief   Исполняемый файл таймера задержки
+  \brief   РСЃРїРѕР»РЅСЏРµРјС‹Р№ С„Р°Р№Р» С‚Р°Р№РјРµСЂР° Р·Р°РґРµСЂР¶РєРё
   \author  JavaLandau
   \version 1.0
   \date    20.12.2017 
@@ -9,20 +9,20 @@
 #include "stm32f0xx_hal.h"
 #include "TypesDefine.h"
 
-///Объект таймера задержки
+///РћР±СЉРµРєС‚ С‚Р°Р№РјРµСЂР° Р·Р°РґРµСЂР¶РєРё
 static TIM_HandleTypeDef TIMDriver;
 
-///Счетчик для подсчета времени задержки
+///РЎС‡РµС‚С‡РёРє РґР»СЏ РїРѕРґСЃС‡РµС‚Р° РІСЂРµРјРµРЅРё Р·Р°РґРµСЂР¶РєРё
 static int32_t TIMCount = 0;
 
-/**Обработчик прерываний от таймер TIM1*/
+/**РћР±СЂР°Р±РѕС‚С‡РёРє РїСЂРµСЂС‹РІР°РЅРёР№ РѕС‚ С‚Р°Р№РјРµСЂ TIM1*/
 void TIM1_BRK_UP_TRG_COM_IRQHandler(void)
 {
   __HAL_TIM_CLEAR_IT(&TIMDriver, TIM_IT_UPDATE);
   TIMCount--;
 }
 
-/*Задержка на заданное время*/
+/*Р—Р°РґРµСЂР¶РєР° РЅР° Р·Р°РґР°РЅРЅРѕРµ РІСЂРµРјСЏ*/
 void TIMDelay(uint32_t microsec)
 {   
   TIMCount = microsec;  
@@ -31,7 +31,7 @@ void TIMDelay(uint32_t microsec)
   HAL_TIM_Base_Stop_IT(&TIMDriver);
 }
 
-/*Инициализация таймера задержки*/
+/*РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ С‚Р°Р№РјРµСЂР° Р·Р°РґРµСЂР¶РєРё*/
 uint32_t InitTIM(uint32_t period)
 {    
   TIM_ClockConfigTypeDef sClockSourceConfig;

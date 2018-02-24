@@ -1,6 +1,6 @@
 /**
 \file
-  \brief Заголовочный файл расширителя портов GPIO PCA9554
+  \brief Р—Р°РіРѕР»РѕРІРѕС‡РЅС‹Р№ С„Р°Р№Р» СЂР°СЃС€РёСЂРёС‚РµР»СЏ РїРѕСЂС‚РѕРІ GPIO PCA9554
   \author  JavaLandau
   \version 1.0
   \date    20.12.2017  
@@ -16,98 +16,98 @@
 @{
 */
 
-#define PORT_PIN_INPUT                  0x1	        ///<Порт GPIO типа "вход"
-#define PORT_PIN_OUTPUT                 0x0             ///<Порт GPIO типа "выход"
+#define PORT_PIN_INPUT                  0x1	        ///<РџРѕСЂС‚ GPIO С‚РёРїР° "РІС…РѕРґ"
+#define PORT_PIN_OUTPUT                 0x0             ///<РџРѕСЂС‚ GPIO С‚РёРїР° "РІС‹С…РѕРґ"
 
-#define PORT_PIN_POLARITY_RETAINED      0x0             ///<Порт GPIO неинвертированный
-#define PORT_PIN_POLARITY_INVERTED      0x1             ///<Порт GPIO инвертированный
+#define PORT_PIN_POLARITY_RETAINED      0x0             ///<РџРѕСЂС‚ GPIO РЅРµРёРЅРІРµСЂС‚РёСЂРѕРІР°РЅРЅС‹Р№
+#define PORT_PIN_POLARITY_INVERTED      0x1             ///<РџРѕСЂС‚ GPIO РёРЅРІРµСЂС‚РёСЂРѕРІР°РЅРЅС‹Р№
 
-#define PCA9554_NUM_GPIO                8               ///<Число портов GPIO в PCA9554
+#define PCA9554_NUM_GPIO                8               ///<Р§РёСЃР»Рѕ РїРѕСЂС‚РѕРІ GPIO РІ PCA9554
 
-///Структура драйвера
+///РЎС‚СЂСѓРєС‚СѓСЂР° РґСЂР°Р№РІРµСЂР°
 typedef struct _DevicePCA9554 {
-  I2C_HandleTypeDef I2CDrv;                             ///<Указатель на структуру драйвера \f$I^2C\f$
+  I2C_HandleTypeDef I2CDrv;                             ///<РЈРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР° \f$I^2C\f$
   
-  GPIO_TypeDef*     pGPIOINTPort;                       ///<Указатель на структуру GPIO для сигнала прерывания INT
-  uint16_t          GPIOINTNum;                         ///<Указатель на номер GPIO для сигнала прерывания INT
-  uint8_t           DevAddress;                         ///<Адрес \f$I^2C\f$ микросхемы
-  uint8_t           ConfRegister;                       ///<Копия конфигурационного регистра PCA9554
-  uint8_t           OutputPortRegister;                 ///<Копия регистра выходов PCA9554   
+  GPIO_TypeDef*     pGPIOINTPort;                       ///<РЈРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ GPIO РґР»СЏ СЃРёРіРЅР°Р»Р° РїСЂРµСЂС‹РІР°РЅРёСЏ INT
+  uint16_t          GPIOINTNum;                         ///<РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РЅРѕРјРµСЂ GPIO РґР»СЏ СЃРёРіРЅР°Р»Р° РїСЂРµСЂС‹РІР°РЅРёСЏ INT
+  uint8_t           DevAddress;                         ///<РђРґСЂРµСЃ \f$I^2C\f$ РјРёРєСЂРѕСЃС…РµРјС‹
+  uint8_t           ConfRegister;                       ///<РљРѕРїРёСЏ РєРѕРЅС„РёРіСѓСЂР°С†РёРѕРЅРЅРѕРіРѕ СЂРµРіРёСЃС‚СЂР° PCA9554
+  uint8_t           OutputPortRegister;                 ///<РљРѕРїРёСЏ СЂРµРіРёСЃС‚СЂР° РІС‹С…РѕРґРѕРІ PCA9554   
 } DevicePCA9554;
 
-///Структура параметров инициализации драйвера
+///РЎС‚СЂСѓРєС‚СѓСЂР° РїР°СЂР°РјРµС‚СЂРѕРІ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РґСЂР°Р№РІРµСЂР°
 typedef struct _DevicePCA9554Param {
-  I2C_TypeDef*      pInstanceI2CDrv;                    ///<Указатель на параметры драйвера \f$I^2C\f$     
-  uint8_t           AddrDevice;                         ///<Младший адрес \f$I^2C\f$ микросхемы
-  char*             GPIOINTPin;                         ///<Строка описания номера пина микроконтроллера, используемого для сигнала INT
+  I2C_TypeDef*      pInstanceI2CDrv;                    ///<РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РїР°СЂР°РјРµС‚СЂС‹ РґСЂР°Р№РІРµСЂР° \f$I^2C\f$     
+  uint8_t           AddrDevice;                         ///<РњР»Р°РґС€РёР№ Р°РґСЂРµСЃ \f$I^2C\f$ РјРёРєСЂРѕСЃС…РµРјС‹
+  char*             GPIOINTPin;                         ///<РЎС‚СЂРѕРєР° РѕРїРёСЃР°РЅРёСЏ РЅРѕРјРµСЂР° РїРёРЅР° РјРёРєСЂРѕРєРѕРЅС‚СЂРѕР»Р»РµСЂР°, РёСЃРїРѕР»СЊР·СѓРµРјРѕРіРѕ РґР»СЏ СЃРёРіРЅР°Р»Р° INT
 } DevicePCA9554Param;
 
-///Специальные коды ошибок
+///РЎРїРµС†РёР°Р»СЊРЅС‹Рµ РєРѕРґС‹ РѕС€РёР±РѕРє
 typedef enum _ExtCodeDevicePCA9554 {
-  DEVICE_PCA9554_NOT_CODE = 0,                          ///<Ошибок нет
-  DEVICE_PCA9554_ERROR_INIT_I2C,                        ///<Ошибка инициализации \f$I^2C\f$
-  DEVICE_PCA9554_ERROR_INIT_GPIO,                       ///<Ошибка инициализации GPIO
-  DEVICE_PCA9554_ERROR_PROCESS_I2C,                     ///<Ошибка при работе с \f$I^2C\f$
-  DEVICE_PCA9554_ERROR_WRITE_I2C                        ///<Ошибка записи данных в микросхему
+  DEVICE_PCA9554_NOT_CODE = 0,                          ///<РћС€РёР±РѕРє РЅРµС‚
+  DEVICE_PCA9554_ERROR_INIT_I2C,                        ///<РћС€РёР±РєР° РёРЅРёС†РёР°Р»РёР·Р°С†РёРё \f$I^2C\f$
+  DEVICE_PCA9554_ERROR_INIT_GPIO,                       ///<РћС€РёР±РєР° РёРЅРёС†РёР°Р»РёР·Р°С†РёРё GPIO
+  DEVICE_PCA9554_ERROR_PROCESS_I2C,                     ///<РћС€РёР±РєР° РїСЂРё СЂР°Р±РѕС‚Рµ СЃ \f$I^2C\f$
+  DEVICE_PCA9554_ERROR_WRITE_I2C                        ///<РћС€РёР±РєР° Р·Р°РїРёСЃРё РґР°РЅРЅС‹С… РІ РјРёРєСЂРѕСЃС…РµРјСѓ
 } ExtCodeDevicePCA9554;
 
-/**Инициализация драйвера PCA9554
-  \param[in] pDevParam указатель на структуру параметров для инициализации драйвера
-  \param[out] pDev указатель на структуру драйвера
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РґСЂР°Р№РІРµСЂР° PCA9554
+  \param[in] pDevParam СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РїР°СЂР°РјРµС‚СЂРѕРІ РґР»СЏ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РґСЂР°Р№РІРµСЂР°
+  \param[out] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */
 uint32_t DevicePCA9554Create(DevicePCA9554Param* pDevParam, DevicePCA9554* pDev, ExtCodeDevicePCA9554* pExCode);
 
-/**Считывание значений всех входов GPIO
-  \param[in] pDev указатель на структуру драйвера
-  \param[out] pPortState состояние входов GPIO 
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**РЎС‡РёС‚С‹РІР°РЅРёРµ Р·РЅР°С‡РµРЅРёР№ РІСЃРµС… РІС…РѕРґРѕРІ GPIO
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[out] pPortState СЃРѕСЃС‚РѕСЏРЅРёРµ РІС…РѕРґРѕРІ GPIO 
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */
 uint32_t DevicePCA9554GetAllInputPorts(DevicePCA9554* pDev, GPIO_PinState* pPortState, ExtCodeDevicePCA9554* pExCode);
 
-/**Считывание значения отдельного входа GPIO
-  \param[in] pDev указатель на структуру драйвера
-  \param[in] NumPort номер порта GPIO 
-  \param[out] pPortState состояние входа GPIO 
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**РЎС‡РёС‚С‹РІР°РЅРёРµ Р·РЅР°С‡РµРЅРёСЏ РѕС‚РґРµР»СЊРЅРѕРіРѕ РІС…РѕРґР° GPIO
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[in] NumPort РЅРѕРјРµСЂ РїРѕСЂС‚Р° GPIO 
+  \param[out] pPortState СЃРѕСЃС‚РѕСЏРЅРёРµ РІС…РѕРґР° GPIO 
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */
 uint32_t DevicePCA9554GetInputPort(DevicePCA9554* pDev, uint8_t NumPort, GPIO_PinState* pPortState, ExtCodeDevicePCA9554* pExCode);
 
-/**Установка значений всех выходов GPIO
-  \param[in] pDev указатель на структуру драйвера
-  \param[in] pPortState значения выходов GPIO 
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**РЈСЃС‚Р°РЅРѕРІРєР° Р·РЅР°С‡РµРЅРёР№ РІСЃРµС… РІС‹С…РѕРґРѕРІ GPIO
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[in] pPortState Р·РЅР°С‡РµРЅРёСЏ РІС‹С…РѕРґРѕРІ GPIO 
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */
 uint32_t DevicePCA9554SetAllOutputPorts(DevicePCA9554* pDev, GPIO_PinState* pPortState, ExtCodeDevicePCA9554* pExCode);
 
-/**Установка значения отдельного выхода GPIO
-  \param[in] pDev указатель на структуру драйвера
-  \param[in] NumPort номер порта GPIO 
-  \param[in] PortState значение выхода GPIO 
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**РЈСЃС‚Р°РЅРѕРІРєР° Р·РЅР°С‡РµРЅРёСЏ РѕС‚РґРµР»СЊРЅРѕРіРѕ РІС‹С…РѕРґР° GPIO
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[in] NumPort РЅРѕРјРµСЂ РїРѕСЂС‚Р° GPIO 
+  \param[in] PortState Р·РЅР°С‡РµРЅРёРµ РІС‹С…РѕРґР° GPIO 
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */
 uint32_t DevicePCA9554SetOutputPort(DevicePCA9554* pDev, uint8_t NumPort, GPIO_PinState PortState, ExtCodeDevicePCA9554* pExCode);
 
-/**Конфигурирование всех портов GPIO
-  \param[in] pDev указатель на структуру драйвера
-  \param[in] pPortDirection направления портов GPIO 
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**РљРѕРЅС„РёРіСѓСЂРёСЂРѕРІР°РЅРёРµ РІСЃРµС… РїРѕСЂС‚РѕРІ GPIO
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[in] pPortDirection РЅР°РїСЂР°РІР»РµРЅРёСЏ РїРѕСЂС‚РѕРІ GPIO 
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */
 uint32_t DevicePCA9554SetConfRegister(DevicePCA9554* pDev, uint8_t* pPortDirection, ExtCodeDevicePCA9554* pExCode);
 
 
-/**Конфигурирование отдельных портов GPIO
-  \param[in] pDev указатель на структуру драйвера
-  \param[in] NumPort номер порта GPIO
-  \param[in] PortDirection направление порта GPIO
-  \param[out] pExCode специальный код ошибки выполнения функции
-  \return Результат выполнения функции 
+/**РљРѕРЅС„РёРіСѓСЂРёСЂРѕРІР°РЅРёРµ РѕС‚РґРµР»СЊРЅС‹С… РїРѕСЂС‚РѕРІ GPIO
+  \param[in] pDev СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґСЂР°Р№РІРµСЂР°
+  \param[in] NumPort РЅРѕРјРµСЂ РїРѕСЂС‚Р° GPIO
+  \param[in] PortDirection РЅР°РїСЂР°РІР»РµРЅРёРµ РїРѕСЂС‚Р° GPIO
+  \param[out] pExCode СЃРїРµС†РёР°Р»СЊРЅС‹Р№ РєРѕРґ РѕС€РёР±РєРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё
+  \return Р РµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё 
 */
 uint32_t DevicePCA9554SetConfPort(DevicePCA9554* pDev, uint8_t NumPort, uint8_t PortDirection, ExtCodeDevicePCA9554* pExCode);
 

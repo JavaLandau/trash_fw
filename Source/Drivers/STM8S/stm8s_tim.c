@@ -1,6 +1,6 @@
 /**
   \file    stm8s_tim.c 
-  \brief   Исполняемый файл драйвера таймера ядра STM8S
+  \brief   РСЃРїРѕР»РЅСЏРµРјС‹Р№ С„Р°Р№Р» РґСЂР°Р№РІРµСЂР° С‚Р°Р№РјРµСЂР° СЏРґСЂР° STM8S
   \author  JavaLandau
   \version 1.0
   \date    20.12.2017 
@@ -9,7 +9,7 @@
 #include "BitsMaskOperations.h"
 #include "stm8s_tim.h"
 
-/** @name Регистры TIM
+/** @name Р РµРіРёСЃС‚СЂС‹ TIM
 */                        
 ///@{
 //TIM1
@@ -95,7 +95,7 @@
 #define TIM4_ARR     (((volatile char*)(0x005346)))
 ///@}
 
-/** @name Значения битов регистров TIM
+/** @name Р—РЅР°С‡РµРЅРёСЏ Р±РёС‚РѕРІ СЂРµРіРёСЃС‚СЂРѕРІ TIM
 */                        
 ///@{
 #define BIF          7
@@ -108,7 +108,7 @@
 #define UIF          0
 ///@}
 
-/** @name Указатели на обработчиков прерываний от таймеров 
+/** @name РЈРєР°Р·Р°С‚РµР»Рё РЅР° РѕР±СЂР°Р±РѕС‚С‡РёРєРѕРІ РїСЂРµСЂС‹РІР°РЅРёР№ РѕС‚ С‚Р°Р№РјРµСЂРѕРІ 
 */                        
 ///@{
 HwrIntFunc pTIM1IntFunc;
@@ -116,7 +116,7 @@ HwrIntFunc pTIM2IntFunc;
 HwrIntFunc pTIM3IntFunc;
 ///@}
 
-/** @name Структуры на каждый аппаратный таймер
+/** @name РЎС‚СЂСѓРєС‚СѓСЂС‹ РЅР° РєР°Р¶РґС‹Р№ Р°РїРїР°СЂР°С‚РЅС‹Р№ С‚Р°Р№РјРµСЂ
 */                        
 ///@{
 const void* TIM1Struct;
@@ -124,10 +124,10 @@ const void* TIM2Struct;
 const void* TIM3Struct;
 ///@}
 
-/*Инициализация таймера*/
+/*РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ С‚Р°Р№РјРµСЂР°*/
 uint32_t stm8s_tim_Init(TIMType* TIMDef)
 {
-  /*Проверка входных данных*/
+  /*РџСЂРѕРІРµСЂРєР° РІС…РѕРґРЅС‹С… РґР°РЅРЅС‹С…*/
   if(!TIMDef)
     return FUNC_INVALID_PARAM;
   
@@ -147,34 +147,34 @@ uint32_t stm8s_tim_Init(TIMType* TIMDef)
       pTIM2IntFunc = TIMDef->FuncCallback;
       TIM2Struct = TIMDef->UserData;
       
-      /*Инициализация регистров таймера*/
+      /*РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЂРµРіРёСЃС‚СЂРѕРІ С‚Р°Р№РјРµСЂР°*/
       CHANGE_REG(TIM2_ARRH, (char)((TIMDef->ARR >> 0x8) & 0xFF));
       CHANGE_REG(TIM2_ARRL, (char)(TIMDef->ARR & 0xFF));
       
       CHANGE_REG(TIM2_PSCR, (char)(TIMDef->Prescaler & 0xFF));
       
-      /*Сброс счетчика*/
+      /*РЎР±СЂРѕСЃ СЃС‡РµС‚С‡РёРєР°*/
       RESET_REG(TIM2_CNTRH);
       RESET_REG(TIM2_CNTRL);
                       
-      /*Включение обработки прерываний от таймера*/
+      /*Р’РєР»СЋС‡РµРЅРёРµ РѕР±СЂР°Р±РѕС‚РєРё РїСЂРµСЂС‹РІР°РЅРёР№ РѕС‚ С‚Р°Р№РјРµСЂР°*/
       CHANGE_REG(TIM2_IER,0x01);      
     } else
     {
       pTIM2IntFunc = TIMDef->FuncCallback;
       TIM2Struct = TIMDef->UserData;
       
-      /*Инициализация регистров таймера*/
+      /*РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЂРµРіРёСЃС‚СЂРѕРІ С‚Р°Р№РјРµСЂР°*/
       CHANGE_REG(TIM3_ARRH, (char)((TIMDef->ARR >> 0x8) & 0xFF));
       CHANGE_REG(TIM3_ARRL, (char)(TIMDef->ARR & 0xFF));
       
       CHANGE_REG(TIM3_PSCR, (char)(TIMDef->Prescaler & 0xFF));
       
-      /*Сброс счетчика*/
+      /*РЎР±СЂРѕСЃ СЃС‡РµС‚С‡РёРєР°*/
       RESET_REG(TIM3_CNTRH);
       RESET_REG(TIM3_CNTRL);
                       
-      /*Включение обработки прерываний от таймера*/
+      /*Р’РєР»СЋС‡РµРЅРёРµ РѕР±СЂР°Р±РѕС‚РєРё РїСЂРµСЂС‹РІР°РЅРёР№ РѕС‚ С‚Р°Р№РјРµСЂР°*/
       CHANGE_REG(TIM3_IER,0x01);            
     }
   } else if(TIMDef->Instance == TIM1)   
@@ -182,25 +182,25 @@ uint32_t stm8s_tim_Init(TIMType* TIMDef)
     pTIM1IntFunc = TIMDef->FuncCallback;
     TIM1Struct = TIMDef->UserData;
     
-    /*Инициализация регистров таймера*/
+    /*РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЂРµРіРёСЃС‚СЂРѕРІ С‚Р°Р№РјРµСЂР°*/
     CHANGE_REG(TIM1_ARRH, (char)((TIMDef->ARR >> 0x8) & 0xFF));
     CHANGE_REG(TIM1_ARRL, (char)(TIMDef->ARR & 0xFF));
     
     CHANGE_REG(TIM1_PSCRH, (char)((TIMDef->Prescaler >> 0x8) & 0xFF));
     CHANGE_REG(TIM1_PSCRL, (char)(TIMDef->Prescaler & 0xFF));
     
-    /*Сброс счетчика*/
+    /*РЎР±СЂРѕСЃ СЃС‡РµС‚С‡РёРєР°*/
     RESET_REG(TIM1_CNTRH);
     RESET_REG(TIM1_CNTRL);
 
-    /*Включение обработки прерываний от таймера*/
+    /*Р’РєР»СЋС‡РµРЅРёРµ РѕР±СЂР°Р±РѕС‚РєРё РїСЂРµСЂС‹РІР°РЅРёР№ РѕС‚ С‚Р°Р№РјРµСЂР°*/
     CHANGE_REG(TIM1_IER,0x01);    
   }
   
   return FUNC_OK;
 }
 
-/*Запуск счетчика таймера*/
+/*Р—Р°РїСѓСЃРє СЃС‡РµС‚С‡РёРєР° С‚Р°Р№РјРµСЂР°*/
 uint32_t stm8s_tim_Start(TIMType* TIMDef)
 {
   if(!TIMDef)
@@ -217,7 +217,7 @@ uint32_t stm8s_tim_Start(TIMType* TIMDef)
   return FUNC_OK;
 }
 
-/*Остановка счетчика таймера*/
+/*РћСЃС‚Р°РЅРѕРІРєР° СЃС‡РµС‚С‡РёРєР° С‚Р°Р№РјРµСЂР°*/
 uint32_t stm8s_tim_Stop(TIMType* TIMDef)
 {
   if(!TIMDef)
@@ -234,7 +234,7 @@ uint32_t stm8s_tim_Stop(TIMType* TIMDef)
   return FUNC_OK;
 }
 
-/*Обработчик прерываний по событию UPDATE от таймера TIM1*/
+/*РћР±СЂР°Р±РѕС‚С‡РёРє РїСЂРµСЂС‹РІР°РЅРёР№ РїРѕ СЃРѕР±С‹С‚РёСЋ UPDATE РѕС‚ С‚Р°Р№РјРµСЂР° TIM1*/
 void stm8s_TIM1_UpdateInterrupt(void)
 {
   RESET_REG_BIT(TIM1_SR1,UIF);
@@ -243,7 +243,7 @@ void stm8s_TIM1_UpdateInterrupt(void)
     pTIM1IntFunc(TIM1Struct);  
 }
 
-/*Обработчик прерываний по событию UPDATE от таймера TIM2*/
+/*РћР±СЂР°Р±РѕС‚С‡РёРє РїСЂРµСЂС‹РІР°РЅРёР№ РїРѕ СЃРѕР±С‹С‚РёСЋ UPDATE РѕС‚ С‚Р°Р№РјРµСЂР° TIM2*/
 void stm8s_TIM2_UpdateInterrupt(void)
 {
   RESET_REG_BIT(TIM2_SR1,UIF);
@@ -252,7 +252,7 @@ void stm8s_TIM2_UpdateInterrupt(void)
     pTIM2IntFunc(TIM2Struct);
 }
 
-/*Обработчик прерываний по событию UPDATE от таймера TIM3*/
+/*РћР±СЂР°Р±РѕС‚С‡РёРє РїСЂРµСЂС‹РІР°РЅРёР№ РїРѕ СЃРѕР±С‹С‚РёСЋ UPDATE РѕС‚ С‚Р°Р№РјРµСЂР° TIM3*/
 void stm8s_TIM3_UpdateInterrupt(void)
 {
   RESET_REG_BIT(TIM3_SR1,UIF);
