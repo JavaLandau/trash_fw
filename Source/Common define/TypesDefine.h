@@ -1,6 +1,6 @@
 /**
   \file    TypesDefine.h 
-  \brief   Заголовочный файл определений типов переменных, кодов ошибок и другое
+  \brief   Header file of types of variables definition, error codes && etc.
   \author  JavaLandau
   \version 1.0
   \date    20.12.2017 
@@ -9,22 +9,22 @@
 #ifndef __FUNC_DEFINE__
 #define __FUNC_DEFINE__
 
-/** @name Коды ошибок функций
+/** @name Error codes for functions
 */                        
 ///@{
-#define FUNC_OK                 0               ///<Ошибок нет
-#define FUNC_ERROR              1               ///<Неизвестная ошибка
-#define FUNC_INVALID_PARAM      2               ///<Неправильный формат входных данных
-#define FUNC_HEAP_MEM_ERROR     3               ///<Ошибка выделения памяти в куче
+#define FUNC_OK                 0               ///<No error
+#define FUNC_ERROR              1               ///<Unknown error
+#define FUNC_INVALID_PARAM      2               ///<Invalid format of input arguments
+#define FUNC_HEAP_MEM_ERROR     3               ///<Error of allocate memory
 ///@}
 
-/** @name Определение булевых значений
+/** @name Bool types definition
 */                        
 ///@{
-#define FALSE                   0               ///<Логическая "ложь"
-#define TRUE                    1               ///<Логическая "истина"
+#define FALSE                   0               ///<Logical "false"
+#define TRUE                    1               ///<Logical "true"
 ///@}
 
-typedef void (*HwrIntFunc)(void*);              ///<Указатель на функцию-обработчика прерываний
+typedef void (*HwrIntFunc)(void*);              ///<Pointer to interrupt callback
 
 #endif

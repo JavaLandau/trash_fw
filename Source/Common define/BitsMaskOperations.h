@@ -1,6 +1,6 @@
 /**
   \file    BitsMaskOperations.h 
-  \brief   Заголовочный файл макросов битовых маскированных операций для общего применения
+  \brief   Header file of macros of masked operations for common purpose
   \author  JavaLandau
   \version 1.0
   \date    20.12.2017 
@@ -9,61 +9,61 @@
 #ifndef __BITS_MASK_OPERATIONS__
 #define __BITS_MASK_OPERATIONS__
 
-#define RESET		       0        ///<Сброс бита/байта/регистра
-#define SET		       1        ///<Установка бита/байта/регистра
+#define RESET		       0        ///<Reset bit/byte/register
+#define SET		       1        ///<Set bit/byte/register
 
 /**
-  \defgroup module_bits_op_4_var Битовые маскированные операции для переменных
-  \brief Модуль битовых маскированных операций для работы с переменными
+  \defgroup module_bits_op_4_var Masked bit operations for variables
+  \brief Module of masked bit operations for variables
 @{
 */
 
-///Сброс/установка заданного бита в заданном байте
+///Set/reset preassigned bit in preassigned byte
 #define CHANGE_BIT(SRC,NUM,VALUE)    if(VALUE) (SRC)|=(char)(1<<(NUM));\
                                      else (SRC)&=(char)(~(1<<(NUM)));
-///Сброс заданного бита в заданном байте
+///Reset preassigned bit in preassigned byte
 #define RESET_BIT(SRC,NUM)           ((SRC)&=(char)(~(1<<(NUM))))
 
-///Установка заданного бита в заданном байте
+///Set preassigned bit in preassigned byte
 #define SET_BIT(SRC,NUM)   	     ((SRC)|=(char)(1<<(NUM))
 
-///Значение заданного бита в заданном байте
+///Value of preassigned bit in preassigned byte
 #define GET_BIT(SRC, NUM)            ((char)(((SRC)>>(NUM))&0xFF))
-/**  
+/**
   @}
 */
 
 /**
-  \defgroup module_bits_op_4_reg Битовые маскированные операции для регистров
-  \brief Модуль битовых маскированных операций для работы с регистрами процессора или указателями
+  \defgroup module_bits_op_4_reg Masked bit operations for registers
+  \brief Module of masked bit operations for registers
 @{
 */
 
-///Сброс/установка заданного бита в заданном регистре
+///Set/reset preassigned bit in preassigned register
 #define CHANGE_REG_BIT(SRC,NUM,VALUE) if(VALUE) (*SRC)|=(char)(1<<(NUM));\
                                       else (*SRC)&=(char)(~(1<<(NUM)));
 
-///Сброс заданного бита в заданном регистре                                      
+///Reset preassigned bit in preassigned register
 #define RESET_REG_BIT(SRC,NUM)        ((*SRC)&=(char)(~(1<<(NUM))))
 
-///Установка заданного бита в заданном регистре                                      
+///Set preassigned bit in preassigned register
 #define SET_REG_BIT(SRC,NUM)          ((*SRC)|=(char)(1<<(NUM)))
 
-///Значение заданного бита в заданном регистре                                      
+///Value of preassigned bit in preassigned register
 #define GET_REG_BIT(SRC, NUM)         ((char)(((*SRC)>>(NUM))&0xFF))
 
-///Изменение заданного регистра на заданное значение                                         
+///Change value of register
 #define CHANGE_REG(SRC,VALUE)	      (*(SRC) = (VALUE))
 
-///Значение заданного регистра                                      
+///Value of register
 #define GET_REG(SRC)	              (*(SRC))
 
-///Установка заданного регистра                                      
-#define SET_REG(SRC)                  (*(SRC) = 0xFF)  
+///Set register
+#define SET_REG(SRC)                  (*(SRC) = 0xFF)
 
-///Сброс заданного регистра                                      
-#define RESET_REG(SRC)                (*(SRC) = 0x00)  
-/**  
+///Reset register
+#define RESET_REG(SRC)                (*(SRC) = 0x00)
+/**
   @}
 */
                                       
