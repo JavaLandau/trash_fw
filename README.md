@@ -1,4 +1,4 @@
 # Trash of firmware
 
-The repository contains various firmware (drivers for chips, libraries and etc.),  
-which are not related to any projects. Anyway some code might be helpful that's why this  repository exists.  
+The repository contains various firmware (drivers for chips, libraries and etc.), which are not related to any projects.  
+**NOTE. It is the archive repository**
